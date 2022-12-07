@@ -1,0 +1,19 @@
+{
+  "cwd": "/wokspace",
+  "type": [
+    "pwa"
+  ],
+  "name": "Know Where You Go",
+  "framework": "react",
+  "template": "tabs",
+  "bundler": "vite",
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": false,
+    "color": "#007aff",
+    "darkTheme": true,
+    "iconFonts": true,
+    "fillBars": false
+  },
+  "customBuild": false
+}
