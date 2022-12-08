@@ -28,6 +28,7 @@
 		"mhutchie.git-graph",
 		"donjayamanne.githistory",
 		"Gruntfuggly.todo-tree",
-		"GitHub.copilot"
+		"GitHub.copilot",
+		"GitHub.vscode-pull-request-github"
 	]
 }
