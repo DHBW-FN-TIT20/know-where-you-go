@@ -21,7 +21,8 @@
             {
                 "code": 120
             }
-        ]
+        ],
+        "react/prop-types": "off"
     },
     "ignorePatterns": [
         "src/**/*.test.js",
