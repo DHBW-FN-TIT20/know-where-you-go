@@ -1,0 +1,41 @@
+{
+  "name": "know-where-you-go",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Know Where You Go",
+  "repository": "",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "cross-env NODE_ENV=development vite",
+    "build": "cross-env NODE_ENV=production vite build && npx workbox generateSW workbox-config.js",
+    "postinstall": "cpy --flat ./node_modules/framework7-icons/fonts/*.* ./src/fonts/ && cpy --flat ./node_modules/material-icons/iconfont/*.* ./src/fonts/"
+  },
+  "browserslist": [
+    "IOS >= 13",
+    "Safari >= 13",
+    "last 5 Chrome versions",
+    "last 5 Firefox versions",
+    "Samsung >= 12"
+  ],
+  "dependencies": {
+    "dom7": "^4.0.4",
+    "framework7": "^7.0.9",
+    "framework7-icons": "^5.0.5",
+    "framework7-react": "^7.0.9",
+    "material-icons": "^1.13.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "skeleton-elements": "^4.0.1",
+    "swiper": "^8.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react-refresh": "^1.3.6",
+    "cpy-cli": "^4.2.0",
+    "cross-env": "^7.0.3",
+    "postcss-preset-env": "^7.8.3",
+    "vite": "^3.2.5",
+    "workbox-cli": "^6.5.4"
+  }
+}
