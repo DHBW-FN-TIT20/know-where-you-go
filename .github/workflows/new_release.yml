@@ -5,6 +5,8 @@ name: New Release
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - v*.*.*
 
