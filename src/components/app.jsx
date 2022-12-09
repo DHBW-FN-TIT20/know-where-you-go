@@ -28,7 +28,7 @@ import {
 import routes from '../js/routes';
 import store from '../js/store';
 
-export default class MyApp extends React.Component {
+class MyApp extends React.Component {
 
   f7params = {
     name: 'Know Where You Go', // App name
@@ -66,3 +66,5 @@ export default class MyApp extends React.Component {
     )
   }
 }
+
+export default MyApp;
