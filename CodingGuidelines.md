@@ -47,7 +47,8 @@ CONSTANT_CASE | global constant values (declared on module level; if the value c
 2. Additional variables
 3. Component/Class
    1. Optional constructor
+      > Only use constructor if you need to set initial state or bind methods. JavaScript will automatically create an empty constructor for you.
    2. Definitions
    3. Functions
-   4. Additional destructures
+   4. Additional destructors
 4. Exports
