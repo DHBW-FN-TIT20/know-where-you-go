@@ -38,7 +38,8 @@ CONSTANT_CASE | global constant values (declared on module level; if the value c
 4. Open curly braces always go on the **same line** as whatever necessitates them.
 5. Use a single declaration per variable statement (i.e. use `var x = 1; var y = 2;` over `var x = 1, y = 2;`).
 6. Separate function from the JSX if it takes more than one line (i.e. button click).
-7. Use 2 spaces for indentation.
+7. Do not use inline styles. Use separate CSS files instead.
+8. Use 2 spaces for indentation.
    > VSCode: *View* -> *Command Palette...* -> *"Indent Using Spaces"* ->  **2**
 
 ## Structure within components
