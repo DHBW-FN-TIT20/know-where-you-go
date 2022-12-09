@@ -1,34 +1,31 @@
 # Coding Guidelines - React Typescript
 
 ## Names
-1. Do not use "I" as a prefix for interface names.
-2. Do not use "_" as a prefix for private properties.
-3. Use whole words in names when possible.
-4. Give folders/files/components/functions unique names.
+1. Do not use "_" as a prefix for private properties.
+2. Use whole words in names when possible.
+3. Give folders/files/components/functions unique names.
 
 Style | Category
 --- | ---
-PascalCase | class / interface / type / enum / decorator / type parameters / component files
+PascalCase | class / enum / decorator / component files
 camelCase | variable / parameter / function / method / property / module alias / folder names + non-component files
 CONSTANT_CASE | global constant values (declared on module level; if the value can be instantiated more than once it must use camelCase) 
 
 ## Components
 1. 1 file per logical component.
-2. Filename should match the component name. Interfaces for that component shall be called `<ComponentName>Props` and `<ComponentName>State`.
+2. Filename should match the component name.
 
 ## `null` and `undefined`
 1. Use **undefined**. Do not use null.
 
 ## Comments
 1. Use JSDoc-style comments (`/** JSDoc */`) for functions, interfaces, enums, and classes.
-   1. Only specify function attributes/parameters if they are not self-explanatory.
+   1. Specify all function attribute/parameter types
+   2. Only specify function attributes/parameters with text if they are not self-explanatory.
 2. Use single line comments (`// line comment`) for implementation comments.
 3. Write comments only if they add value. Do not comment for the sake of commenting.
    > What comments are needed so that another developer understands the code?<br/>
    > Keep in mind: The comments are the projects documentation. If the code is not self-explanatory, it should be refactored/commented. 
-
-## When to use `any`
-1. Use `unknown`
 
 ## Style
 1. Use arrow functions over anonymous function expressions.
@@ -46,11 +43,10 @@ CONSTANT_CASE | global constant values (declared on module level; if the value c
 
 ## Structure within components
 1. Imports - Prefer destructuring over importing the whole module.
-2. Types
-3. Additional variables
-4. Component/Class
+2. Additional variables
+3. Component/Class
    1. Optional constructor
    2. Definitions
    3. Functions
    4. Additional destructures
-5. Exports
+4. Exports
