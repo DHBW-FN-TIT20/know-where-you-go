@@ -1,0 +1,93 @@
+# Deploy App in GitHub Pages and create realse 
+
+
+name: New Release
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - v*.*.*
+
+jobs:
+  # Validate the code
+  call-workflow-2-in-local-repo:
+    uses: ./.github/workflows/validate_pr.yml
+
+  # Build the App
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        cache: 'npm'
+    
+    - name: Install packages
+      run: npm ci
+    
+    - name: Run Tests
+      run: npm test --if-present
+    
+    - name: Build app
+      run: npm run build
+
+    - name: Archive Release
+      uses: thedoctor0/zip-release@main
+      with:
+        type: 'zip'
+        directory: 'www'
+        filename: ${{ env.GIT_TAG_NAME }}.zip
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: github-pages
+        path: ${{ env.GIT_TAG_NAME }}.zip
+        retention-days: ${{ inputs.retention-days }}
+
+  # Create Release
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - name: Download build
+      uses: actions/download-artifact@v3
+      with:
+        name: github-pages
+
+    - name: Create release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        prerelease: false
+        files: |
+          ${{ env.GIT_TAG_NAME }}.zip
+
+  # Deploy on GitHub Pages
+  GitHubPages:
+
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - name: Download build
+      uses: actions/download-artifact@v3
+      with:
+        name: github-pages
+
+    - name: Unzip Data
+      uses: montudor/action-zip@v1
+      with:
+        args: unzip -qq ${{ env.GIT_TAG_NAME }}.zip -d www
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: www

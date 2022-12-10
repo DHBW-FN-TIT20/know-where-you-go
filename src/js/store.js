@@ -1,17 +1,10 @@
-
-import { createStore } from 'framework7/lite';
+import { createStore } from "framework7/lite";
 
 const store = createStore({
-  state: {
-    
-  },
+  state: {},
 
-  getters: {
-    
-  },
-  
-  actions: {
-    
-  },
-})
+  getters: {},
+
+  actions: {},
+});
 export default store;
