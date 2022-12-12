@@ -19,6 +19,7 @@ class Home extends React.Component {
     this.state = {
       sheetOpened: true,
       sheetHeight: SEARCH_BAR_HEIGHT,
+      sheetHeightTransitionStyle: "0.3s ease-in-out",
       currentLocation: {
         lat: 47,
         lng: 9,
@@ -79,11 +80,16 @@ class Home extends React.Component {
         </MapContainer>
 
         <div id="sheetSwipeArea" ref={this.sheetScrollAreaRef}>
-          <Sheet className="test-modal-sheet" style={{ height: this.state.sheetHeight }} opened={true}>
-            <div className="sheet-modal-swipe-step">
-              <Searchbar style={{ height: SEARCH_BAR_HEIGHT }} />
-              <BlockTitle medium>Your order:</BlockTitle>
-            </div>
+          <Sheet
+            style={{
+              height: this.state.sheetHeight,
+              transition: this.state.sheetHeightTransitionStyle,
+            }}
+            opened={true}
+          >
+            <Searchbar style={{ height: SEARCH_BAR_HEIGHT }} />
+            <BlockTitle medium>Your order:</BlockTitle>
+
             <List>
               <ListItem title="Item 1" />
               <ListItem title="Item 2" />
@@ -99,6 +105,7 @@ class Home extends React.Component {
 
   touchStartOnSheet = event => {
     this.touchOnSheetStartY = event.touches[0].clientY;
+    this.setState({ sheetHeightTransitionStyle: "0s" });
   };
 
   touchMoveOnSheet = event => {
@@ -130,7 +137,9 @@ class Home extends React.Component {
     const closestSheetHeightState = sheetHeightStates.reduce((prev, curr) => {
       return Math.abs(curr - this.state.sheetHeight) < Math.abs(prev - this.state.sheetHeight) ? curr : prev;
     });
-    this.setState({ sheetHeight: closestSheetHeightState });
+
+    // transition to the new sheet height
+    this.setState({ sheetHeightTransitionStyle: "0.3s ease-in-out", sheetHeight: closestSheetHeightState });
   };
 }
 
