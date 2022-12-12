@@ -38,18 +38,16 @@ jobs:
       run: npm run build
 
     - name: Archive Release
-      uses: thedoctor0/zip-release@main
-      with:
-        type: 'zip'
-        directory: 'www'
-        filename: ${{ env.GIT_TAG_NAME }}.zip
+      run: tar -zcvf release.tar.gz www/
+        
+    - name: Show Files
+      run: ls -la
         
     - name: Upload artifact
       uses: actions/upload-artifact@main
       with:
         name: github-pages
-        path: ${{ env.GIT_TAG_NAME }}.zip
-        retention-days: ${{ inputs.retention-days }}
+        path: release.tar.gz
 
   # Create Release
   release:
@@ -68,7 +66,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         prerelease: false
         files: |
-          ${{ env.GIT_TAG_NAME }}.zip
+          release.tar.gz
 
   # Deploy on GitHub Pages
   GitHubPages:
@@ -77,17 +75,25 @@ jobs:
     needs: [build]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
     - name: Download build
       uses: actions/download-artifact@v3
       with:
         name: github-pages
 
     - name: Unzip Data
-      uses: montudor/action-zip@v1
-      with:
-        args: unzip -qq ${{ env.GIT_TAG_NAME }}.zip -d www
+      run: |
+        mkdir www
+        tar -xf release.tar.gz
+        ls -la
+        ls -la www
 
     - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
+      uses: crazy-max/ghaction-github-pages@v3
       with:
-        folder: www
+        target_branch: gh-pages
+        build_dir: www
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
