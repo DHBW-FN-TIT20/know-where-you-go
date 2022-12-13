@@ -16,6 +16,7 @@ class Home extends React.Component {
         lng: 9.447241869601651,
       },
       snapSheetToState: 1,
+      searchText: "",
     };
   }
 
@@ -40,6 +41,34 @@ class Home extends React.Component {
     map.flyTo([this.state.currentLocation.lat, this.state.currentLocation.lng], 13);
     return null;
   };
+
+  /*
+   * Search for a place by text or coordinates
+   */
+  search = async () => {
+    const coords = this.getCoordsFromSearchText(this.state.searchText);
+
+    let place = {};
+    if (coords !== undefined) place = await getPlaceByText(this.state.searchText);
+    else place = await getPlaceByCoords(coords);
+  };
+
+  /*
+   * Get coordinates from a string
+   */
+  getCoordsFromSearchText = text => {
+    const coordinateRegex = /^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/;
+    coordinateRegex.test(text);
+    const match = text.match(coordinateRegex);
+    if (!match) return undefined;
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[3]);
+    return { lat: lat, lng: lng };
+  };
+
+  getPlaceByText = async searchText => {};
+
+  getPlaceByCoords = async coords => {};
 
   render() {
     return (
@@ -71,9 +100,13 @@ class Home extends React.Component {
         >
           <Searchbar
             style={{ height: SEARCH_BAR_HEIGHT }}
+            value={this.state.searchText}
             onFocus={() => {
               this.setState({ snapSheetToState: 2 });
             }}
+            placeholder="Place, address, or coordinates (lat, lng)"
+            onChange={e => this.setState({ searchText: e.target.value })}
+            onSubmit={() => this.search()}
           />
           <BlockTitle medium>Your order:</BlockTitle>
 
