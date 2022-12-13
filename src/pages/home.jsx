@@ -17,7 +17,15 @@ class Home extends React.Component {
       },
       snapSheetToState: 1,
       searchText: "",
+      place: {},
+      mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
     };
+
+    this.sheetHeightStates = [
+      SEARCH_BAR_HEIGHT,
+      window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
+      (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
+    ];
   }
 
   componentDidMount() {
@@ -33,31 +41,49 @@ class Home extends React.Component {
           lng: position.coords.longitude,
         },
       });
+      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
     });
   }
-
-  MapHook = () => {
-    const map = useMap();
-    map.flyTo([this.state.currentLocation.lat, this.state.currentLocation.lng], 13);
-    return null;
-  };
 
   /*
    * Search for a place by text or coordinates
    */
-  search = async () => {
+  updatePlaceBySearch = async () => {
     const coords = this.getCoordsFromSearchText(this.state.searchText);
 
     let place = {};
-    if (coords !== undefined) place = await getPlaceByText(this.state.searchText);
-    else place = await getPlaceByCoords(coords);
+    // @ts-ignore
+    if (coords !== undefined) place = await this.getPlaceByCoords(coords);
+    // @ts-ignore
+    else place = await this.getPlaceByText(this.state.searchText);
+
+    if (place === undefined) return;
+
+    this.setState({
+      place: place,
+      snapSheetToState: 2,
+    });
   };
 
-  /*
+  /**
+   * Update the place by given coordinates
+   * @param {{lat: number, lng: number}} coords
+   */
+  updatePlaceByCoords = async coords => {
+    const place = await this.getPlaceByCoords(coords);
+    this.setState({
+      place: place,
+      snapSheetToState: 2,
+    });
+  };
+
+  /**
    * Get coordinates from a string
+   * @param {string} text
+   * @returns {{lat: number, lng: number} | undefined} undefined if no coordinates were found
    */
   getCoordsFromSearchText = text => {
-    const coordinateRegex = /^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/;
+    const coordinateRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
     coordinateRegex.test(text);
     const match = text.match(coordinateRegex);
     if (!match) return undefined;
@@ -66,11 +92,102 @@ class Home extends React.Component {
     return { lat: lat, lng: lng };
   };
 
-  getPlaceByText = async searchText => {};
+  /**
+   * Get a place from nominatim by text
+   * @param {string} searchText
+   * @returns Promise<Place>
+   */
+  getPlaceByText = async searchText => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&addressdetails=1&limit=1&extratags=1`,
+    );
+    const data = await response.json();
+    console.log(data[0]);
+    if (data[0] === undefined) return;
+    const place = this.getPlaceByNominatimData(data[0]);
+    return place;
+  };
 
-  getPlaceByCoords = async coords => {};
+  /**
+   * Get a place from nominatim by coordinates
+   * @param {{lat: number, lng: number}} coords
+   * @returns {Promise<any>}
+   */
+  getPlaceByCoords = async coords => {
+    const response = await fetch(
+      // eslint-disable-next-line max-len
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=15&addressdetails=1`,
+    );
+    const data = await response.json();
+    console.log(data);
+    if (data === undefined) return;
+    const place = this.getPlaceByNominatimData(data);
+    return place;
+  };
+
+  /**
+   * Get a place from nominatim response data
+   * @param {any} placeData
+   * @returns {any}
+   */
+  getPlaceByNominatimData = placeData => {
+    if (placeData === undefined) return;
+    let place = {
+      name: placeData.display_name || "",
+      address: {
+        amenity: placeData.address.amenity || "",
+        city: placeData.address.city || "",
+        cityDistrict: placeData.address.city_district || "",
+        municipality: placeData.address.municipality || "",
+        country: placeData.address.country || "",
+        countryCode: placeData.address.country_code || "",
+        neighbourhood: placeData.address.neighbourhood || "",
+        postcode: placeData.address.postcode || "",
+        road: placeData.address.road || "",
+        houseNumber: placeData.address.house_number || "",
+        state: placeData.address.state || "",
+        suburb: placeData.address.suburb || "",
+      },
+      type: placeData.type || "",
+      importance: placeData.importance || 0,
+      osmId: placeData.osm_id || 0,
+      realCoords: {
+        lat: placeData.lat || 0,
+        lng: placeData.lon || 0,
+      },
+      userInputCoords: {
+        lat: 0,
+        lng: 0,
+      },
+      searchedByCoords: false,
+      searchedByCurrentLocation: false,
+      searchedByPlace: false,
+      searchedByAddress: false,
+    };
+
+    return place;
+  };
+
+  /**
+   * Small Compnent to interact with the leaflet map
+   * @returns {null}
+   */
+  MapHook = () => {
+    const map = useMap();
+    // map.flyTo([this.state.currentLocation.lat, this.state.currentLocation.lng], 13);
+    map.panTo([this.state.currentLocation.lat, this.state.currentLocation.lng]);
+    return null;
+  };
 
   render() {
+    // address object -> string
+    let address = "";
+    if (this.state.place.address !== undefined) {
+      Object.values(this.state.place.address).forEach(value => {
+        if (value !== undefined && value !== "") address += value + ", ";
+      });
+    }
+
     return (
       <Page name="home">
         <MapContainer
@@ -90,31 +207,31 @@ class Home extends React.Component {
         </MapContainer>
 
         <SnappingSheet
-          snapHeightStates={[
-            SEARCH_BAR_HEIGHT,
-            window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
-            (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
-          ]}
+          snapHeightStates={this.sheetHeightStates}
           currentState={this.state.snapSheetToState}
-          snappedToState={() => this.setState({ snapSheetToState: undefined })}
+          snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
         >
           <Searchbar
-            style={{ height: SEARCH_BAR_HEIGHT }}
+            style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
             value={this.state.searchText}
             onFocus={() => {
               this.setState({ snapSheetToState: 2 });
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
-            onChange={e => this.setState({ searchText: e.target.value })}
-            onSubmit={() => this.search()}
+            onChange={event => {
+              if (event.target.value === "") this.updatePlaceByCoords(this.state.currentLocation);
+              this.setState({ searchText: event.target.value });
+            }}
+            onSubmit={() => this.updatePlaceBySearch()}
+            onClickClear={() => {
+              this.setState({ searchText: "" });
+              this.updatePlaceByCoords(this.state.currentLocation);
+            }}
           />
-          <BlockTitle medium>Your order:</BlockTitle>
+          <BlockTitle medium>{this.state.place.name}</BlockTitle>
+          <BlockTitle>{address}</BlockTitle>
 
-          <List>
-            <ListItem title="Item 1" />
-            <ListItem title="Item 2" />
-            <ListItem title="Item 3" />
-          </List>
+          <List></List>
         </SnappingSheet>
       </Page>
     );
