@@ -3,6 +3,7 @@ import { Page, Searchbar, List, ListItem, BlockTitle } from "framework7-react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
+import OwnLocationMarker from "../components/OwnLocationMarker";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -11,8 +12,8 @@ class Home extends React.Component {
     super(props);
     this.state = {
       currentLocation: {
-        lat: 47,
-        lng: 9,
+        lat: 47.665575312188025,
+        lng: 9.447241869601651,
       },
       snapSheetToState: 1,
     };
@@ -56,6 +57,7 @@ class Home extends React.Component {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <this.MapHook />
+          <OwnLocationMarker position={this.state.currentLocation}></OwnLocationMarker>
         </MapContainer>
 
         <SnappingSheet
