@@ -1,6 +1,6 @@
 import React from "react";
-import { Page, Searchbar, List, ListItem, BlockTitle } from "framework7-react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { Page, Searchbar, List, BlockTitle } from "framework7-react";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import OwnLocationMarker from "../components/OwnLocationMarker";
@@ -12,6 +12,10 @@ class Home extends React.Component {
     super(props);
     this.state = {
       currentLocation: {
+        lat: 47.665575312188025,
+        lng: 9.447241869601651,
+      },
+      mapCenter: {
         lat: 47.665575312188025,
         lng: 9.447241869601651,
       },
@@ -40,6 +44,10 @@ class Home extends React.Component {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         },
+        mapCenter: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        },
       });
       this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
     });
@@ -61,7 +69,7 @@ class Home extends React.Component {
 
     this.setState({
       place: place,
-      snapSheetToState: 2,
+      snapSheetToState: 1,
     });
   };
 
@@ -73,7 +81,7 @@ class Home extends React.Component {
     const place = await this.getPlaceByCoords(coords);
     this.setState({
       place: place,
-      snapSheetToState: 2,
+      snapSheetToState: 1,
     });
   };
 
@@ -116,7 +124,7 @@ class Home extends React.Component {
   getPlaceByCoords = async coords => {
     const response = await fetch(
       // eslint-disable-next-line max-len
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=15&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=18&addressdetails=1`,
     );
     const data = await response.json();
     console.log(data);
@@ -174,8 +182,24 @@ class Home extends React.Component {
    */
   MapHook = () => {
     const map = useMap();
-    // map.flyTo([this.state.currentLocation.lat, this.state.currentLocation.lng], 13);
-    map.panTo([this.state.currentLocation.lat, this.state.currentLocation.lng]);
+
+    // set the center of the map to this.state.mapCenter (but let the user move it)
+    map.setView(this.state.mapCenter, map.getZoom(), { animate: true });
+
+    useMapEvents({
+      click: event => {
+        this.updatePlaceByCoords(event.latlng);
+        // TODO: fix this
+        // eslint-disable-next-line react/no-direct-mutation-state
+        this.state.mapCenter = event.latlng;
+      },
+      moveend: () => {
+        // TODO: fix this
+        // eslint-disable-next-line react/no-direct-mutation-state
+        this.state.mapCenter = map.getCenter();
+      },
+    });
+
     return null;
   };
 
