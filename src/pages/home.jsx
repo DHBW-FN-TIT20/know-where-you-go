@@ -3,6 +3,7 @@ import { Page, Searchbar, List, ListItem, BlockTitle } from "framework7-react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
+import OwnLocationMarker from "../components/OwnLocationMarker";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -11,10 +12,11 @@ class Home extends React.Component {
     super(props);
     this.state = {
       currentLocation: {
-        lat: 47,
-        lng: 9,
+        lat: 47.665575312188025,
+        lng: 9.447241869601651,
       },
       snapSheetToState: 1,
+      searchText: "",
     };
   }
 
@@ -40,6 +42,34 @@ class Home extends React.Component {
     return null;
   };
 
+  /*
+   * Search for a place by text or coordinates
+   */
+  search = async () => {
+    const coords = this.getCoordsFromSearchText(this.state.searchText);
+
+    let place = {};
+    if (coords !== undefined) place = await getPlaceByText(this.state.searchText);
+    else place = await getPlaceByCoords(coords);
+  };
+
+  /*
+   * Get coordinates from a string
+   */
+  getCoordsFromSearchText = text => {
+    const coordinateRegex = /^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/;
+    coordinateRegex.test(text);
+    const match = text.match(coordinateRegex);
+    if (!match) return undefined;
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[3]);
+    return { lat: lat, lng: lng };
+  };
+
+  getPlaceByText = async searchText => {};
+
+  getPlaceByCoords = async coords => {};
+
   render() {
     return (
       <Page name="home">
@@ -56,6 +86,7 @@ class Home extends React.Component {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <this.MapHook />
+          <OwnLocationMarker position={this.state.currentLocation}></OwnLocationMarker>
         </MapContainer>
 
         <SnappingSheet
@@ -69,9 +100,13 @@ class Home extends React.Component {
         >
           <Searchbar
             style={{ height: SEARCH_BAR_HEIGHT }}
+            value={this.state.searchText}
             onFocus={() => {
               this.setState({ snapSheetToState: 2 });
             }}
+            placeholder="Place, address, or coordinates (lat, lng)"
+            onChange={e => this.setState({ searchText: e.target.value })}
+            onSubmit={() => this.search()}
           />
           <BlockTitle medium>Your order:</BlockTitle>
 
