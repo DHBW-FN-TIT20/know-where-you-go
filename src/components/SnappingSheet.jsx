@@ -10,7 +10,7 @@ class SnappingSheet extends React.Component {
     super(props);
     this.state = {
       sheetOpened: true,
-      sheetHeight: props.snapHeightStates[0],
+      sheetHeight: this.props.snapHeightStates[this.props.currentState || 0],
       sheetHeightTransitionStyle: "0.3s ease-in-out",
       currentLocation: {
         lat: 47,
@@ -32,6 +32,9 @@ class SnappingSheet extends React.Component {
     this.sheetScrollAreaRef.current.addEventListener("mousedown", this.dragStart, { passive: false });
     window.addEventListener("mousemove", this.dragMove, { passive: false });
     window.addEventListener("mouseup", this.dragEnd, { passive: false });
+
+    // let the parent know that the sheet is snapped to the current state (to clear the state)
+    if (this.props.currentState !== undefined) this.props.snappedToState(this.props.currentState);
   }
 
   /**
@@ -47,6 +50,19 @@ class SnappingSheet extends React.Component {
     this.sheetScrollAreaRef.current.removeEventListener("mousedown", this.dragStart);
     window.removeEventListener("mousemove", this.dragMove);
     window.removeEventListener("mouseup", this.dragEnd);
+  }
+
+  /**
+   * Snaps the sheet to a given state if the state is defined
+   */
+  componentDidUpdate() {
+    if (this.props.currentState !== undefined) {
+      this.setState({
+        sheetHeightTransitionStyle: "0.3s ease-in-out",
+        sheetHeight: this.props.snapHeightStates[this.props.currentState],
+      });
+      this.props.snappedToState(this.props.currentState);
+    }
   }
 
   /**
@@ -106,6 +122,10 @@ class SnappingSheet extends React.Component {
   };
 
   render() {
+    if (this.props.children === undefined) {
+      return null;
+    }
+
     return (
       <div ref={this.sheetScrollAreaRef}>
         <Sheet
@@ -125,7 +145,9 @@ class SnappingSheet extends React.Component {
 // define the types of the properties that are passed to the component
 SnappingSheet.prototype.props = /** @type { { 
   children: React.ReactNode 
-  snapHeightStates: number[], 
+  snapHeightStates: number[],
+  currentState: number | undefined,
+  snappedToState: (state: number) => void
 } } */ ({});
 
 export default SnappingSheet;

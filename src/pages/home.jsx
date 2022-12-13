@@ -14,6 +14,7 @@ class Home extends React.Component {
         lat: 47,
         lng: 9,
       },
+      snapSheetToState: 1,
     };
   }
 
@@ -63,8 +64,15 @@ class Home extends React.Component {
             window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
             (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
           ]}
+          currentState={this.state.snapSheetToState}
+          snappedToState={() => this.setState({ snapSheetToState: undefined })}
         >
-          <Searchbar style={{ height: SEARCH_BAR_HEIGHT }} />
+          <Searchbar
+            style={{ height: SEARCH_BAR_HEIGHT }}
+            onFocus={() => {
+              this.setState({ snapSheetToState: 2 });
+            }}
+          />
           <BlockTitle medium>Your order:</BlockTitle>
 
           <List>
