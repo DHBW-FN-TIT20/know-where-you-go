@@ -49,7 +49,7 @@ class Home extends React.Component {
           lng: position.coords.longitude,
         },
       });
-      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
+      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18);
     });
   }
 
@@ -77,8 +77,8 @@ class Home extends React.Component {
    * Update the place by given coordinates
    * @param {{lat: number, lng: number}} coords
    */
-  updatePlaceByCoords = async coords => {
-    const place = await this.getPlaceByCoords(coords);
+  updatePlaceByCoords = async (coords, zoom) => {
+    const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
       snapSheetToState: 1,
@@ -121,10 +121,10 @@ class Home extends React.Component {
    * @param {{lat: number, lng: number}} coords
    * @returns {Promise<any>}
    */
-  getPlaceByCoords = async coords => {
+  getPlaceByCoords = async (coords, zoom) => {
     const response = await fetch(
       // eslint-disable-next-line max-len
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=18&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=${zoom}&addressdetails=1`,
     );
     const data = await response.json();
     console.log(data);
@@ -188,7 +188,7 @@ class Home extends React.Component {
 
     useMapEvents({
       click: event => {
-        this.updatePlaceByCoords(event.latlng);
+        this.updatePlaceByCoords(event.latlng, map.getZoom());
         // TODO: fix this
         // eslint-disable-next-line react/no-direct-mutation-state
         this.state.mapCenter = event.latlng;
@@ -243,13 +243,13 @@ class Home extends React.Component {
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
             onChange={event => {
-              if (event.target.value === "") this.updatePlaceByCoords(this.state.currentLocation);
+              if (event.target.value === "") this.updatePlaceByCoords(this.state.currentLocation, 18);
               this.setState({ searchText: event.target.value });
             }}
             onSubmit={() => this.updatePlaceBySearch()}
             onClickClear={() => {
               this.setState({ searchText: "" });
-              this.updatePlaceByCoords(this.state.currentLocation);
+              this.updatePlaceByCoords(this.state.currentLocation, 18);
             }}
           />
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
