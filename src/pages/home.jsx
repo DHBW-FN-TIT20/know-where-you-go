@@ -19,17 +19,17 @@ class Home extends React.Component {
       searchText: "",
       place: {},
       mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
+      mapCenter: {
+        lat: 47.665575312188025,
+        lng: 9.447241869601651,
+      },
     };
 
-    (this.mapCenter = {
-      lat: 47.665575312188025,
-      lng: 9.447241869601651,
-    }),
-      (this.sheetHeightStates = [
-        SEARCH_BAR_HEIGHT,
-        window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
-        (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
-      ]);
+    this.sheetHeightStates = [
+      SEARCH_BAR_HEIGHT,
+      window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
+      (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
+    ];
   }
 
   componentDidMount() {
@@ -70,6 +70,10 @@ class Home extends React.Component {
     this.setState({
       place: place,
       snapSheetToState: 1,
+      mapCenter: {
+        lat: place.realCoords.lat,
+        lng: place.realCoords.lng,
+      },
     });
   };
 
@@ -97,6 +101,7 @@ class Home extends React.Component {
     if (!match) return undefined;
     const lat = parseFloat(match[1]);
     const lng = parseFloat(match[3]);
+    console.log(`lat: ${lat}, lng: ${lng}`);
     return { lat: lat, lng: lng };
   };
 
@@ -110,7 +115,6 @@ class Home extends React.Component {
       `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&addressdetails=1&limit=1&extratags=1`,
     );
     const data = await response.json();
-    console.log(data[0]);
     if (data[0] === undefined) return;
     const place = this.getPlaceByNominatimData(data[0]);
     return place;
@@ -121,7 +125,7 @@ class Home extends React.Component {
    * @param {{lat: number, lng: number}} coords
    * @returns {Promise<any>}
    */
-  getPlaceByCoords = async (coords, zoom) => {
+  getPlaceByCoords = async (coords, zoom = 20) => {
     const response = await fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=${zoom}&addressdetails=1`,
@@ -130,6 +134,9 @@ class Home extends React.Component {
     console.log(data);
     if (data === undefined) return;
     const place = this.getPlaceByNominatimData(data);
+    if (place?.realCoords?.lat === undefined || place?.realCoords?.lng === undefined) {
+      place.realCoords = coords;
+    }
     return place;
   };
 
@@ -140,28 +147,29 @@ class Home extends React.Component {
    */
   getPlaceByNominatimData = placeData => {
     if (placeData === undefined) return;
+    // console.log(placeData);
     let place = {
-      name: placeData.display_name || "",
+      name: placeData?.display_name || "Unknown location",
       address: {
-        amenity: placeData.address.amenity || "",
-        city: placeData.address.city || "",
-        cityDistrict: placeData.address.city_district || "",
-        municipality: placeData.address.municipality || "",
-        country: placeData.address.country || "",
-        countryCode: placeData.address.country_code || "",
-        neighbourhood: placeData.address.neighbourhood || "",
-        postcode: placeData.address.postcode || "",
-        road: placeData.address.road || "",
-        houseNumber: placeData.address.house_number || "",
-        state: placeData.address.state || "",
-        suburb: placeData.address.suburb || "",
+        amenity: placeData?.address?.amenity || "",
+        city: placeData?.address?.city || "",
+        cityDistrict: placeData?.address?.city_district || "",
+        municipality: placeData?.address?.municipality || "",
+        country: placeData?.address?.country || "",
+        countryCode: placeData?.address?.country_code || "",
+        neighbourhood: placeData?.address?.neighbourhood || "",
+        postcode: placeData?.address?.postcode || "",
+        road: placeData?.address?.road || "",
+        houseNumber: placeData?.address?.house_number || "",
+        state: placeData?.address?.state || "",
+        suburb: placeData?.address?.suburb || "",
       },
-      type: placeData.type || "",
-      importance: placeData.importance || 0,
-      osmId: placeData.osm_id || 0,
+      type: placeData?.type || "",
+      importance: placeData?.importance ? parseFloat(placeData?.lat) : 0,
+      osmId: placeData?.osm_id || 0,
       realCoords: {
-        lat: placeData.lat || 0,
-        lng: placeData.lon || 0,
+        lat: placeData?.lat ? parseFloat(placeData?.lat) : undefined,
+        lng: placeData?.lon ? parseFloat(placeData?.lon) : undefined,
       },
       userInputCoords: {
         lat: 0,
@@ -172,7 +180,7 @@ class Home extends React.Component {
       searchedByPlace: false,
       searchedByAddress: false,
     };
-
+    // console.log(place);
     return place;
   };
 
@@ -184,17 +192,22 @@ class Home extends React.Component {
     const map = useMap();
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
-    map.setView(this.mapCenter, map.getZoom(), { animate: true });
+    map.setView(this.state.mapCenter, map.getZoom(), { animate: true });
 
     useMapEvents({
       click: event => {
+        console.log("click");
+        // eslint-disable-next-line react/no-direct-mutation-state
+        this.state.mapCenter = event.latlng;
         this.updatePlaceByCoords(event.latlng, map.getZoom());
-        this.mapCenter = event.latlng;
       },
-      moveend: () => {
-        this.mapCenter = map.getCenter();
+      dragend: () => {
+        console.log("dragend");
+        // eslint-disable-next-line react/no-direct-mutation-state
+        this.state.mapCenter = map.getCenter();
       },
-    });
+    }),
+      [map];
 
     return null;
   };
