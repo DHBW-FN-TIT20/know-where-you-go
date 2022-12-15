@@ -40,3 +40,6 @@ Thumbs.db
 
 # Production build
 www/
+
+# Pagekite for localhost tunneling (https://pagekite.net/)
+pagekite.py

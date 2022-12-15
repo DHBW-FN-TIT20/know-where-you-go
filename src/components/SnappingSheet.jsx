@@ -12,10 +12,6 @@ class SnappingSheet extends React.Component {
       sheetOpened: true,
       sheetHeight: this.props.snapHeightStates[this.props.currentState || 0],
       sheetHeightTransitionStyle: "0.3s ease-in-out",
-      currentLocation: {
-        lat: 47,
-        lng: 9,
-      },
     };
   }
 
@@ -34,7 +30,7 @@ class SnappingSheet extends React.Component {
     window.addEventListener("mouseup", this.dragEnd, { passive: false });
 
     // let the parent know that the sheet is snapped to the current state (to clear the state)
-    if (this.props.currentState !== undefined) this.props.snappedToState(this.props.currentState);
+    if (this.props.currentState !== undefined) this.props.snappedToHeight(this.props.currentState);
   }
 
   /**
@@ -61,7 +57,7 @@ class SnappingSheet extends React.Component {
         sheetHeightTransitionStyle: "0.3s ease-in-out",
         sheetHeight: this.props.snapHeightStates[this.props.currentState],
       });
-      this.props.snappedToState(this.props.currentState);
+      this.props.snappedToHeight(this.props.snapHeightStates[this.props.currentState]);
     }
   }
 
@@ -119,6 +115,7 @@ class SnappingSheet extends React.Component {
 
     // transition to the new sheet height
     this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: closestSheetHeightState });
+    this.props.snappedToHeight(closestSheetHeightState);
   };
 
   render() {
@@ -132,6 +129,7 @@ class SnappingSheet extends React.Component {
           style={{
             height: this.state.sheetHeight,
             transition: this.state.sheetHeightTransitionStyle,
+            overflow: "hidden",
           }}
           opened={true}
         >
@@ -147,7 +145,7 @@ SnappingSheet.prototype.props = /** @type { {
   children: React.ReactNode 
   snapHeightStates: number[],
   currentState: number | undefined,
-  snappedToState: (state: number) => void
+  snappedToHeight: (height: number) => void
 } } */ ({});
 
 export default SnappingSheet;
