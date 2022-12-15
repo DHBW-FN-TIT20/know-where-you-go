@@ -2,7 +2,7 @@ import React from "react";
 
 import process from "node:process";
 
-import { App, Block, Navbar, Page, Panel, View, Views } from "framework7-react";
+import { App, View, Views } from "framework7-react";
 
 import routes from "../js/routes";
 import store from "../js/store";
