@@ -15,21 +15,21 @@ class Home extends React.Component {
         lat: 47.665575312188025,
         lng: 9.447241869601651,
       },
-      mapCenter: {
-        lat: 47.665575312188025,
-        lng: 9.447241869601651,
-      },
       snapSheetToState: 1,
       searchText: "",
       place: {},
       mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
     };
 
-    this.sheetHeightStates = [
-      SEARCH_BAR_HEIGHT,
-      window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
-      (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
-    ];
+    (this.mapCenter = {
+      lat: 47.665575312188025,
+      lng: 9.447241869601651,
+    }),
+      (this.sheetHeightStates = [
+        SEARCH_BAR_HEIGHT,
+        window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
+        (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
+      ]);
   }
 
   componentDidMount() {
@@ -184,19 +184,15 @@ class Home extends React.Component {
     const map = useMap();
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
-    map.setView(this.state.mapCenter, map.getZoom(), { animate: true });
+    map.setView(this.mapCenter, map.getZoom(), { animate: true });
 
     useMapEvents({
       click: event => {
         this.updatePlaceByCoords(event.latlng, map.getZoom());
-        // TODO: fix this
-        // eslint-disable-next-line react/no-direct-mutation-state
-        this.state.mapCenter = event.latlng;
+        this.mapCenter = event.latlng;
       },
       moveend: () => {
-        // TODO: fix this
-        // eslint-disable-next-line react/no-direct-mutation-state
-        this.state.mapCenter = map.getCenter();
+        this.mapCenter = map.getCenter();
       },
     });
 
