@@ -4,7 +4,7 @@ import L from "leaflet";
 
 class OwnLocationMarker extends React.Component {
   markerIcon = L.icon({
-    iconUrl: "../img/OwnLocationMarker.png",
+    iconUrl: "img/OwnLocationMarker.png",
     iconSize: [20, 20], // size of the icon
     iconAnchor: [10, 10], // point of the icon which will correspond to marker's location --> Middle of the icon
   });
