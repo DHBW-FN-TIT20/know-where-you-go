@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Block, BlockTitle, PageContent, Link } from "framework7-react";
+import { Page, Block, BlockTitle, Link } from "framework7-react";
 
 class Impressum extends React.Component {
   constructor(props) {
@@ -26,59 +26,59 @@ class Impressum extends React.Component {
             Die Anwendung ist open source und kann auf{" "}
             <Link href="https://github.com/DHBW-FN-TIT20/know-where-you-go">GitHub</Link> gefunden werden.
           </p>
-          <p>
-            Die App wird von Studenten der DHBW Friedrichshafen entwickelt:
-            <ul>
-              <li>
-                <Link href="https://github.com/baldur132">Baldur Siegel</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/schuler-henry">Henry Schuler</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/Floqueboque">Florian Herkommer</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/Floskinner">Florian Glaser</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/johannesbrandenburger">Johannes Brandenburger</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/screetox">David Felder</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/lukasbraundev">Lukas Braun</Link>
-              </li>
-              <li>
-                <Link href="https://github.com/PhillippPatzelt">Phillipp Patzelt</Link>
-              </li>
-            </ul>
-          </p>
+          <p>Die App wird von Studenten der DHBW Friedrichshafen entwickelt:</p>
+          <ul>
+            <li>
+              <Link href="https://github.com/baldur132">Baldur Siegel</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/schuler-henry">Henry Schuler</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/Floqueboque">Florian Herkommer</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/Floskinner">Florian Glaser</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/johannesbrandenburger">Johannes Brandenburger</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/screetox">David Felder</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/lukasbraundev">Lukas Braun</Link>
+            </li>
+            <li>
+              <Link href="https://github.com/PhillippPatzelt">Phillipp Patzelt</Link>
+            </li>
+          </ul>
         </Block>
-        <PageContent>
-          <BlockTitle>
-            <h1>Impressum</h1>
-          </BlockTitle>
-          <BlockTitle>
-            <h2>Kontakt</h2>
-          </BlockTitle>
-          <Block strong>
-            <p>Angaben gemäß § 5 TMG</p>
-            <p>
-              Florian Glaser<br></br>
-            </p>
-            <p>
-              Fallenbrunnen 2<br></br>
-              88045 Friedrichshafen<br></br>
-              Telefon: 49-123456789
-            </p>
-            E-Mail:{" "}
-            <a href="mailto: glaser.florian-it20@it.dhbw-ravensburg.de">glaser.florian-it20@it.dhbw-ravensburg.de</a>
-          </Block>
-          <BlockTitle>Haftungsausschluss: </BlockTitle>
-          <BlockTitle>Haftung für Inhalte</BlockTitle>
-          <Block>
+        <BlockTitle>
+          <h1>Impressum</h1>
+        </BlockTitle>
+        <BlockTitle>
+          <h2>Kontakt</h2>
+        </BlockTitle>
+        <Block strong>
+          <p>Angaben gemäß § 5 TMG</p>
+          <p>
+            Florian Glaser<br></br>
+          </p>
+          <p>
+            Fallenbrunnen 2<br></br>
+            88045 Friedrichshafen<br></br>
+            Telefon: 49-123456789
+          </p>
+          E-Mail:{" "}
+          <a href="mailto: glaser.florian-it20@it.dhbw-ravensburg.de">glaser.florian-it20@it.dhbw-ravensburg.de</a>
+        </Block>
+        <BlockTitle>
+          <h2>Haftungsausschluss:</h2>
+        </BlockTitle>
+        <Block strong>
+          <h3>Haftung für Inhalte</h3>
+          <p>
             Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
             Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7
             Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis
@@ -88,9 +88,9 @@ class Impressum extends React.Component {
             bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer
             konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese
             Inhalte umgehend entfernen.
-          </Block>
-          <BlockTitle>Haftung für Links</BlockTitle>
-          <Block>
+          </p>
+          <h3>Haftung für Links</h3>
+          <p>
             Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben.
             Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten
             Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten
@@ -98,9 +98,9 @@ class Impressum extends React.Component {
             Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist
             jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von
             Rechtsverletzungen werden wir derartige Links umgehend entfernen.
-          </Block>
-          <BlockTitle>Urheberrecht</BlockTitle>
-          <Block>
+          </p>
+          <h3>Urheberrecht</h3>
+          <p>
             Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen
             Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der
             Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
@@ -109,15 +109,15 @@ class Impressum extends React.Component {
             Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine
             Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von
             Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
-          </Block>
-          <Block>
-            Website Impressum erstellt durch{" "}
-            <Link href="https://www.impressum-generator.de">impressum-generator.de</Link> von der{" "}
-            <Link href="https://www.kanzlei-hasselbach.de/" rel="nofollow">
-              Kanzlei Hasselbach
-            </Link>
-          </Block>
-        </PageContent>
+          </p>
+        </Block>
+        <Block>
+          Website Impressum erstellt durch <Link href="https://www.impressum-generator.de">impressum-generator.de</Link>{" "}
+          von der{" "}
+          <Link href="https://www.kanzlei-hasselbach.de/" rel="nofollow">
+            Kanzlei Hasselbach
+          </Link>
+        </Block>
       </Page>
     );
   }
