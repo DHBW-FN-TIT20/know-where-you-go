@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Link } from "framework7-react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -265,6 +265,7 @@ class Home extends React.Component {
           <BlockTitle>{address}</BlockTitle>
 
           <List></List>
+          <Link href="/impressum">Impressum</Link>
         </SnappingSheet>
       </Page>
     );
