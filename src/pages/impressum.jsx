@@ -9,17 +9,70 @@ class Impressum extends React.Component {
   render() {
     return (
       <Page name="Impressum">
+        <Link back iconOnly iconF7="arrow_left"></Link>
+        <BlockTitle>
+          <h1>About Know-Where-You-Go</h1>
+        </BlockTitle>
+        <Block strong>
+          <p>
+            {" "}
+            Know-Where-You-Go ist eine Webanwendung, die Ihnen hilft, herauszufinden, wo Sie sind und wohin Sie gehen.
+          </p>
+          <p>
+            Es basiert auf dem <Link href="https://www.openstreetmap.org/">OpenStreetMap-Projekt</Link> und verwendet
+            die <Link href="https://www.openstreetmap.org/">OpenStreetMap-API</Link>, um die Daten zu erhalten.
+          </p>
+          <p>
+            Die Anwendung ist open source und kann auf{" "}
+            <Link href="https://github.com/DHBW-FN-TIT20/know-where-you-go">GitHub</Link> gefunden werden.
+          </p>
+          <p>
+            Die App wird von Studenten der DHBW Friedrichshafen entwickelt:
+            <ul>
+              <li>
+                <Link href="https://github.com/baldur132">Baldur Siegel</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/schuler-henry">Henry Schuler</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/Floqueboque">Florian Herkommer</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/Floskinner">Florian Glaser</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/johannesbrandenburger">Johannes Brandenburger</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/screetox">David Felder</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/lukasbraundev">Lukas Braun</Link>
+              </li>
+              <li>
+                <Link href="https://github.com/PhillippPatzelt">Phillipp Patzelt</Link>
+              </li>
+            </ul>
+          </p>
+        </Block>
         <PageContent>
-          <Link back iconOnly iconF7="arrow_left"></Link>
-          <BlockTitle>Impressum</BlockTitle>
-          <Block>Angaben gemäß § 5 TMG</Block>
-          <Block>
-            Florian Glaser<br></br>Fallenbrunnen 2<br></br>88045 Friedrichshafen
-          </Block>
-          <BlockTitle>Kontakt</BlockTitle>
-          <Block>
-            Telefon: 49-123456789
-            <br></br>
+          <BlockTitle>
+            <h1>Impressum</h1>
+          </BlockTitle>
+          <BlockTitle>
+            <h2>Kontakt</h2>
+          </BlockTitle>
+          <Block strong>
+            <p>Angaben gemäß § 5 TMG</p>
+            <p>
+              Florian Glaser<br></br>
+            </p>
+            <p>
+              Fallenbrunnen 2<br></br>
+              88045 Friedrichshafen<br></br>
+              Telefon: 49-123456789
+            </p>
             E-Mail:{" "}
             <a href="mailto: glaser.florian-it20@it.dhbw-ravensburg.de">glaser.florian-it20@it.dhbw-ravensburg.de</a>
           </Block>
