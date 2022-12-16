@@ -112,7 +112,10 @@ class Impressum extends React.Component {
           </p>
         </Block>
         <Block>
-          Website Impressum erstellt durch <Link href="https://www.impressum-generator.de">impressum-generator.de</Link>{" "}
+          {/* // prettier-ignore */}
+          Website Impressum erstellt durch <Link href="https://www.impressum-generator.de">
+            impressum-generator.de
+          </Link>{" "}
           von der{" "}
           <Link href="https://www.kanzlei-hasselbach.de/" rel="nofollow">
             Kanzlei Hasselbach
