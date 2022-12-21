@@ -1,6 +1,6 @@
 import React from "react";
 import { Page, Searchbar, List, BlockTitle } from "framework7-react";
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents, Circle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import OwnLocationMarker from "../components/OwnLocationMarker";
@@ -14,6 +14,7 @@ class Home extends React.Component {
       currentLocation: {
         lat: 47.665575312188025,
         lng: 9.447241869601651,
+        accuracy: 0,
       },
       snapSheetToState: 1,
       searchText: "",
@@ -23,6 +24,7 @@ class Home extends React.Component {
         lat: 47.665575312188025,
         lng: 9.447241869601651,
       },
+      mapZoom: 4,
     };
 
     this.sheetHeightStates = [
@@ -39,16 +41,16 @@ class Home extends React.Component {
     // get the current location
     navigator.geolocation.getCurrentPosition(position => {
       console.log(position);
-      this.setState({
-        currentLocation: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-        mapCenter: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-      });
+      (this.mapZoom = 20),
+        this.setState({
+          currentLocation: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            mapCenter: { lat: position.coords.latitude, lng: position.coords.longitude },
+            mapZoom: 18,
+          },
+        });
       this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18);
     });
   }
@@ -60,13 +62,12 @@ class Home extends React.Component {
     const coords = this.getCoordsFromSearchText(this.state.searchText);
 
     let place = {};
-    // @ts-ignore
     if (coords !== undefined) place = await this.getPlaceByCoords(coords);
-    // @ts-ignore
     else place = await this.getPlaceByText(this.state.searchText);
 
-    if (place === undefined) return;
+    console.log("place in updatePlaceBySearch", place);
 
+    if (place === undefined) return;
     this.setState({
       place: place,
       snapSheetToState: 1,
@@ -80,13 +81,20 @@ class Home extends React.Component {
   /**
    * Update the place by given coordinates
    * @param {{lat: number, lng: number}} coords
+   * @param {number} zoom
    */
   updatePlaceByCoords = async (coords, zoom) => {
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
       snapSheetToState: 1,
+      mapCenter: {
+        lat: place.realCoords.lat,
+        lng: place.realCoords.lng,
+      },
+      mapZoom: zoom,
     });
+    console.log("state in updatePlaceByCoords", this.state);
   };
 
   /**
@@ -188,26 +196,26 @@ class Home extends React.Component {
    * Small Compnent to interact with the leaflet map
    * @returns {null}
    */
-  MapHook = () => {
+  MapHook = ({ mapCenter, onCenterChange, mapZoom, onZoomChange, onClick }) => {
     const map = useMap();
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
-    map.setView(this.state.mapCenter, map.getZoom(), { animate: true });
+    map.setView(mapCenter, mapZoom, { animate: true });
 
     useMapEvents({
       click: event => {
-        console.log("click");
-        // eslint-disable-next-line react/no-direct-mutation-state
-        this.state.mapCenter = event.latlng;
-        this.updatePlaceByCoords(event.latlng, map.getZoom());
+        onClick(event.latlng);
       },
-      dragend: () => {
-        console.log("dragend");
-        // eslint-disable-next-line react/no-direct-mutation-state
-        this.state.mapCenter = map.getCenter();
+      drag: () => {
+        console.log("drag");
+        onCenterChange(map.getCenter());
       },
-    }),
-      [map];
+      zoom: () => {
+        console.log("zoom");
+        onCenterChange(map.getCenter());
+        onZoomChange(map.getZoom());
+      },
+    });
 
     return null;
   };
@@ -224,19 +232,33 @@ class Home extends React.Component {
     return (
       <Page name="home">
         <MapContainer
-          center={[this.state.currentLocation.lat, this.state.currentLocation.lng]}
-          zoom={13}
+          center={[0, 0]}
+          zoom={2}
           scrollWheelZoom={true}
           style={{ height: "100%" }}
           touchZoom={true}
           zoomControl={false}
         >
+          <Circle
+            center={this.state.currentLocation}
+            radius={this.state.currentLocation.accuracy}
+            pathOptions={{ fill: true, fillColor: "#0000ff", fillOpacity: 0.1, color: "#0000ff", opacity: 0.2 }}
+          />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <this.MapHook />
-          <OwnLocationMarker position={this.state.currentLocation}></OwnLocationMarker>
+          <OwnLocationMarker
+            position={this.state.currentLocation}
+            visible={this.state.currentLocation.accuracy !== 0}
+          />
+          <this.MapHook
+            mapCenter={this.state.mapCenter}
+            onCenterChange={center => this.setState({ mapCenter: center })}
+            mapZoom={this.state.mapZoom}
+            onZoomChange={zoom => this.setState({ mapZoom: zoom })}
+            onClick={async coords => await this.updatePlaceByCoords(coords, this.state.mapZoom)}
+          />
         </MapContainer>
 
         <SnappingSheet
@@ -252,13 +274,11 @@ class Home extends React.Component {
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
             onChange={event => {
-              if (event.target.value === "") this.updatePlaceByCoords(this.state.currentLocation, 18);
               this.setState({ searchText: event.target.value });
             }}
             onSubmit={() => this.updatePlaceBySearch()}
             onClickClear={() => {
               this.setState({ searchText: "" });
-              this.updatePlaceByCoords(this.state.currentLocation, 18);
             }}
           />
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
