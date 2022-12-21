@@ -1,6 +1,6 @@
 import React from "react";
 import { Page, Searchbar, List, BlockTitle } from "framework7-react";
-import { MapContainer, TileLayer, useMap, useMapEvents, Circle } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import OwnLocationMarker from "../components/OwnLocationMarker";
@@ -76,6 +76,7 @@ class Home extends React.Component {
         lat: place.realCoords.lat,
         lng: place.realCoords.lng,
       },
+      mapZoom: place.zoomLevel,
     });
   };
 
@@ -184,6 +185,7 @@ class Home extends React.Component {
         lat: 0,
         lng: 0,
       },
+      zoomLevel: this.getZoomByBoundingBox(placeData?.boundingbox) || 10,
       searchedByCoords: false,
       searchedByCurrentLocation: false,
       searchedByPlace: false,
@@ -192,6 +194,27 @@ class Home extends React.Component {
     // console.log(place);
     return place;
   };
+
+  /**
+   * Get the zoom level by a given bounding box
+   * @param {number[] | string[] | undefined} boundingbox
+   * @returns {number | undefined}
+   * @see https://wiki.openstreetmap.org/wiki/Zoom_levels
+   * @see https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Zoom_levels
+   */
+  getZoomByBoundingBox(boundingbox) {
+    if (boundingbox === undefined) return undefined;
+
+    const lat1 = parseFloat(`${boundingbox[0]}`);
+    const lat2 = parseFloat(`${boundingbox[1]}`);
+    const lng1 = parseFloat(`${boundingbox[2]}`);
+    const lng2 = parseFloat(`${boundingbox[3]}`);
+    const latDiff = Math.abs(lat1 - lat2);
+    const lngDiff = Math.abs(lng1 - lng2);
+    const maxDiff = Math.max(latDiff, lngDiff);
+    const zoom = Math.round(Math.log(360 / maxDiff) / Math.log(2));
+    return zoom;
+  }
 
   /**
    * Small Compnent to interact with the leaflet map
