@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, useMap, useMapEvents, Circle } from "react-lea
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import OwnLocationMarker from "../components/OwnLocationMarker";
+import AccuracyCircle from "../components/AccuracyCircle";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -211,7 +212,7 @@ class Home extends React.Component {
         onCenterChange(map.getCenter());
       },
       zoom: () => {
-        console.log("zoom");
+        console.log("zoom", map.getZoom());
         onCenterChange(map.getCenter());
         onZoomChange(map.getZoom());
       },
@@ -239,10 +240,10 @@ class Home extends React.Component {
           touchZoom={true}
           zoomControl={false}
         >
-          <Circle
-            center={this.state.currentLocation}
+          <AccuracyCircle
+            center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
             radius={this.state.currentLocation.accuracy}
-            pathOptions={{ fill: true, fillColor: "#0000ff", fillOpacity: 0.1, color: "#0000ff", opacity: 0.2 }}
+            visible={this.state.mapZoom >= 17}
           />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
