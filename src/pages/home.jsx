@@ -30,8 +30,8 @@ class Home extends React.Component {
 
     this.sheetHeightStates = [
       SEARCH_BAR_HEIGHT,
-      window.innerHeight / 3 + SEARCH_BAR_HEIGHT,
-      (window.innerHeight / 3) * 2 + SEARCH_BAR_HEIGHT,
+      window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
+      window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
     ];
   }
 
@@ -224,7 +224,7 @@ class Home extends React.Component {
     const map = useMap();
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
-    map.setView(mapCenter, mapZoom, { animate: true });
+    map.setView(mapCenter, mapZoom, { animate: true, duration: 0.2 });
 
     useMapEvents({
       click: event => {
