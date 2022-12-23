@@ -3,7 +3,7 @@ import { Page, Searchbar, List, BlockTitle, Button } from "framework7-react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
-import OwnLocationMarker from "../components/OwnLocationMarker";
+import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
 
 const SEARCH_BAR_HEIGHT = 70;
@@ -26,6 +26,7 @@ class Home extends React.Component {
         lng: 9.447241869601651,
       },
       mapZoom: 4,
+      selectedCoords: undefined,
     };
 
     this.sheetHeightStates = [
@@ -76,6 +77,7 @@ class Home extends React.Component {
         lng: place.realCoords.lng,
       },
       mapZoom: place.zoomLevel,
+      selectedCoords: place.realCoords,
     });
   };
 
@@ -94,6 +96,7 @@ class Home extends React.Component {
         lng: place.realCoords.lng,
       },
       mapZoom: zoom,
+      selectedCoords: coords,
     });
     console.log("state in updatePlaceByCoords", this.state);
   };
@@ -271,9 +274,18 @@ class Home extends React.Component {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <OwnLocationMarker
+          <LocationMarker
+            iconUrl={"img/OwnLocationMarker.png"}
             position={this.state.currentLocation}
             visible={this.state.currentLocation.accuracy !== 0}
+            size={{ width: 20, height: 20 }}
+          />
+          <LocationMarker
+            iconUrl={"img/LocationMarker.png"}
+            position={this.state.selectedCoords}
+            visible={this.state.selectedCoords !== undefined}
+            size={{ width: 40, height: 40 }}
+            anchor={{ x: 20, y: 40 }}
           />
           <this.MapHook
             mapCenter={this.state.mapCenter}
