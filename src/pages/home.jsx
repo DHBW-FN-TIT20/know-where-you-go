@@ -42,16 +42,15 @@ class Home extends React.Component {
     // get the current location
     navigator.geolocation.getCurrentPosition(position => {
       console.log(position);
-      (this.mapZoom = 20),
-        this.setState({
-          currentLocation: {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            mapCenter: { lat: position.coords.latitude, lng: position.coords.longitude },
-            mapZoom: 18,
-          },
-        });
+      this.setState({
+        currentLocation: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          mapCenter: { lat: position.coords.latitude, lng: position.coords.longitude },
+          mapZoom: 18,
+        },
+      });
       this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18);
     });
   }
