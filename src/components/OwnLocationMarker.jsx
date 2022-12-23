@@ -10,6 +10,16 @@ class OwnLocationMarker extends React.Component {
   });
 
   render() {
+    if (
+      this.props.position === undefined ||
+      this.props.position === null ||
+      this.props.position.lat === undefined ||
+      this.props.position.lng === undefined ||
+      this.props.visible === false
+    ) {
+      return null;
+    }
+
     return <Marker position={[this.props.position.lat, this.props.position.lng]} icon={this.markerIcon}></Marker>;
   }
 }
