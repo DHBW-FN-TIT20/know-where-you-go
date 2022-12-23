@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem } from "framework7-react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -27,6 +27,8 @@ class Home extends React.Component {
       },
       mapZoom: 4,
       selectedCoords: undefined,
+      searchSuggestions: [],
+      showSearchSuggestions: false,
     };
 
     this.sheetHeightStates = [
@@ -34,6 +36,7 @@ class Home extends React.Component {
       window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
       window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
     ];
+    this.suggestionTimeout = undefined;
   }
 
   componentDidMount() {
@@ -219,6 +222,30 @@ class Home extends React.Component {
   }
 
   /**
+   * Get the search suggestions from nominatim
+   * @param {string} searchText
+   * @returns {Promise<void>}
+   */
+  updateSearchSuggestions = async searchText => {
+    if (searchText.trim().length < 3) {
+      this.setState({ searchSuggestions: [] });
+      return;
+    }
+    clearTimeout(this.suggestionTimeout);
+    this.suggestionTimeout = setTimeout(async () => {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`);
+      const data = await response.json();
+      const searchSuggestions = data.map(place => {
+        const placeData = {
+          displayName: place?.display_name || "Unknown location",
+        };
+        return placeData;
+      });
+      this.setState({ searchSuggestions });
+    }, 200);
+  };
+
+  /**
    * Small Compnent to interact with the leaflet map
    * @returns {null}
    */
@@ -261,7 +288,7 @@ class Home extends React.Component {
           center={[0, 0]}
           zoom={2}
           scrollWheelZoom={true}
-          style={{ height: "100%" }}
+          style={{ height: "100%", cursor: "crosshair" }}
           touchZoom={true}
           zoomControl={false}
         >
@@ -305,21 +332,37 @@ class Home extends React.Component {
             style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
             value={this.state.searchText}
             onFocus={() => {
-              this.setState({ snapSheetToState: 2 });
+              this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
             onChange={event => {
               this.setState({ searchText: event.target.value });
+              this.updateSearchSuggestions(event.target.value);
             }}
             onSubmit={() => this.updatePlaceBySearch()}
             onClickClear={() => {
-              this.setState({ searchText: "" });
+              this.setState({ searchText: "", showSearchSuggestions: false });
             }}
           />
+          <List>
+            {this.state.showSearchSuggestions &&
+              this.state.searchSuggestions.map((suggestion, index) => {
+                return (
+                  <ListItem
+                    key={index}
+                    title={suggestion["displayName"]}
+                    onClick={() => {
+                      this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
+                      this.updatePlaceBySearch();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              })}
+          </List>
+
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
           <BlockTitle>{address}</BlockTitle>
-
-          <List></List>
           <Button
             round
             outline
