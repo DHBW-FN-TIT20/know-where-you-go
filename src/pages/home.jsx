@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button } from "framework7-react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -265,6 +265,13 @@ class Home extends React.Component {
           <BlockTitle>{address}</BlockTitle>
 
           <List></List>
+          <Button
+            round
+            outline
+            href="/impressum"
+            text="Impressum"
+            style={{ width: "fit-content", marginLeft: "50%" }}
+          ></Button>
         </SnappingSheet>
       </Page>
     );
