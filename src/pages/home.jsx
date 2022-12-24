@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
+import OutlinePolygon from "../components/OutlinePolygon";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -72,15 +73,16 @@ class Home extends React.Component {
     }, 5000);
   }
 
-  /*
+  /**
    * Search for a place by text or coordinates
+   * @param {string} searchText
    */
-  updatePlaceBySearch = async () => {
-    const coords = this.getCoordsFromSearchText(this.state.searchText);
+  updatePlaceBySearch = async searchText => {
+    const coords = this.getCoordsFromSearchText(searchText);
 
     let place = {};
     if (coords !== undefined) place = await this.getPlaceByCoords(coords);
-    else place = await this.getPlaceByText(this.state.searchText);
+    else place = await this.getPlaceByText(searchText);
 
     console.log("place in updatePlaceBySearch", place);
 
@@ -237,7 +239,7 @@ class Home extends React.Component {
     const latDiff = Math.abs(lat1 - lat2);
     const lngDiff = Math.abs(lng1 - lng2);
     const maxDiff = Math.max(latDiff, lngDiff);
-    const zoom = Math.round(Math.log(360 / maxDiff) / Math.log(2));
+    const zoom = Math.min(Math.round(Math.log(360 / maxDiff) / Math.log(2)), 18);
     return zoom;
   }
 
@@ -336,6 +338,7 @@ class Home extends React.Component {
             anchor={{ x: 20, y: 40 }}
           />
           <this.MapHook />
+          <OutlinePolygon placeName={this.state.place.name} />
         </MapContainer>
 
         <SnappingSheet
@@ -356,7 +359,7 @@ class Home extends React.Component {
             }}
             onSubmit={event => {
               event.target.blur(); // hide keyboard TODO: this is not working yet
-              this.updatePlaceBySearch();
+              this.updatePlaceBySearch(this.state.searchText);
             }}
             onClickClear={() => {
               this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
@@ -374,7 +377,7 @@ class Home extends React.Component {
                     title={suggestion["displayName"]}
                     onClick={() => {
                       this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                      this.updatePlaceBySearch();
+                      this.updatePlaceBySearch(suggestion["displayName"]);
                     }}
                     style={{ cursor: "pointer" }}
                   />
