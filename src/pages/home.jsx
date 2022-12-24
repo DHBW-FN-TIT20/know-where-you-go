@@ -343,6 +343,12 @@ class Home extends React.Component {
             onClickClear={() => {
               this.setState({ searchText: "", showSearchSuggestions: false });
             }}
+            onSearchbarClear={() => {
+              this.setState({ searchText: "", showSearchSuggestions: false });
+            }}
+            onClickDisable={() => {
+              this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
+            }}
           />
           <List>
             {this.state.showSearchSuggestions &&
