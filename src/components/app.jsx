@@ -2,7 +2,7 @@ import React from "react";
 
 import process from "node:process";
 
-import { App, Block, Navbar, Page, Panel, View, Views } from "framework7-react";
+import { App, View, Views } from "framework7-react";
 
 import routes from "../js/routes";
 import store from "../js/store";
@@ -27,16 +27,6 @@ class MyApp extends React.Component {
   render() {
     return (
       <App {...this.f7params} dark>
-        {/* Left panel with cover effect*/}
-        <Panel left cover dark>
-          <View>
-            <Page>
-              <Navbar title="Left Panel" />
-              <Block>Left panel content goes here</Block>
-            </Page>
-          </View>
-        </Panel>
-
         {/* Views/Tabs container */}
         <Views tabs className="safe-areas">
           <View id="view-home" main tab tabActive url="/" />
