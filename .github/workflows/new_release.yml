@@ -90,6 +90,10 @@ jobs:
         ls -la
         ls -la www
 
+    - name: Add CNAME
+      run: |
+        echo "know-where-you-go.de" > CNAME
+
     - name: Deploy 🚀
       uses: crazy-max/ghaction-github-pages@v3
       with:
