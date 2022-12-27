@@ -6,6 +6,9 @@ import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
 import OutlinePolygon from "../components/OutlinePolygon";
+import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
+import WikiInfo from "../components/WikiInfo";
+import MemoFetcher from "../js/memo-fetcher";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -40,6 +43,7 @@ class Home extends React.Component {
       lat: 47.665575312188025,
       lng: 9.447241869601651,
     };
+    this.memoFetcher = new MemoFetcher();
   }
 
   componentDidMount() {
@@ -48,7 +52,6 @@ class Home extends React.Component {
 
     // get the current location
     navigator.geolocation.getCurrentPosition(position => {
-      console.log(position);
       this.setState({
         currentLocation: {
           lat: position.coords.latitude,
@@ -78,13 +81,11 @@ class Home extends React.Component {
    * @param {string} searchText
    */
   updatePlaceBySearch = async searchText => {
-    const coords = this.getCoordsFromSearchText(searchText);
+    const coords = getCoordsFromSearchText(searchText);
 
     let place = {};
     if (coords !== undefined) place = await this.getPlaceByCoords(coords);
     else place = await this.getPlaceByText(searchText);
-
-    console.log("place in updatePlaceBySearch", place);
 
     if (place === undefined) return;
     this.mapNeedsUpdate = true;
@@ -121,23 +122,6 @@ class Home extends React.Component {
       snapSheetToState: 1,
       selectedCoords: coords,
     });
-    console.log("state in updatePlaceByCoords", this.state);
-  };
-
-  /**
-   * Get coordinates from a string
-   * @param {string} text
-   * @returns {{lat: number, lng: number} | undefined} undefined if no coordinates were found
-   */
-  getCoordsFromSearchText = text => {
-    const coordinateRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
-    coordinateRegex.test(text);
-    const match = text.match(coordinateRegex);
-    if (!match) return undefined;
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[3]);
-    console.log(`lat: ${lat}, lng: ${lng}`);
-    return { lat: lat, lng: lng };
   };
 
   /**
@@ -146,102 +130,35 @@ class Home extends React.Component {
    * @returns Promise<Place>
    */
   getPlaceByText = async searchText => {
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&addressdetails=1&limit=1&extratags=1`,
     );
-    const data = await response.json();
     if (data[0] === undefined) return;
-    const place = this.getPlaceByNominatimData(data[0]);
+    const place = getPlaceByNominatimData(data[0], undefined);
+    place.userInputCoords = place.realCoords;
     return place;
   };
 
   /**
    * Get a place from nominatim by coordinates
    * @param {{lat: number, lng: number}} coords
+   * @param {number} zoom
    * @returns {Promise<any>}
    */
   getPlaceByCoords = async (coords, zoom = 20) => {
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=${
-        zoom + 1
+        parseInt(`${zoom}`) + 1
       }&addressdetails=1`,
     );
-    const data = await response.json();
-    console.log(data);
     if (data === undefined) return;
-    const place = this.getPlaceByNominatimData(data);
+    const place = getPlaceByNominatimData(data, coords);
     if (place?.realCoords?.lat === undefined || place?.realCoords?.lng === undefined) {
       place.realCoords = coords;
     }
     return place;
   };
-
-  /**
-   * Get a place from nominatim response data
-   * @param {any} placeData
-   * @returns {any}
-   */
-  getPlaceByNominatimData = placeData => {
-    if (placeData === undefined) return;
-    // console.log(placeData);
-    let place = {
-      name: placeData?.display_name || "Unknown location",
-      address: {
-        amenity: placeData?.address?.amenity || "",
-        city: placeData?.address?.city || "",
-        cityDistrict: placeData?.address?.city_district || "",
-        municipality: placeData?.address?.municipality || "",
-        country: placeData?.address?.country || "",
-        countryCode: placeData?.address?.country_code || "",
-        neighbourhood: placeData?.address?.neighbourhood || "",
-        postcode: placeData?.address?.postcode || "",
-        road: placeData?.address?.road || "",
-        houseNumber: placeData?.address?.house_number || "",
-        state: placeData?.address?.state || "",
-        suburb: placeData?.address?.suburb || "",
-      },
-      type: placeData?.type || "",
-      importance: placeData?.importance ? parseFloat(placeData?.lat) : 0,
-      osmId: placeData?.osm_id || 0,
-      realCoords: {
-        lat: placeData?.lat ? parseFloat(placeData?.lat) : undefined,
-        lng: placeData?.lon ? parseFloat(placeData?.lon) : undefined,
-      },
-      userInputCoords: {
-        lat: 0,
-        lng: 0,
-      },
-      zoomLevel: this.getZoomByBoundingBox(placeData?.boundingbox) || 10,
-      searchedByCoords: false,
-      searchedByCurrentLocation: false,
-      searchedByPlace: false,
-      searchedByAddress: false,
-    };
-    // console.log(place);
-    return place;
-  };
-
-  /**
-   * Get the zoom level by a given bounding box
-   * @param {number[] | string[] | undefined} boundingbox
-   * @returns {number | undefined}
-   * @see https://wiki.openstreetmap.org/wiki/Zoom_levels
-   * @see https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Zoom_levels
-   */
-  getZoomByBoundingBox(boundingbox) {
-    if (boundingbox === undefined) return undefined;
-
-    const lat1 = parseFloat(`${boundingbox[0]}`);
-    const lat2 = parseFloat(`${boundingbox[1]}`);
-    const lng1 = parseFloat(`${boundingbox[2]}`);
-    const lng2 = parseFloat(`${boundingbox[3]}`);
-    const latDiff = Math.abs(lat1 - lat2);
-    const lngDiff = Math.abs(lng1 - lng2);
-    const maxDiff = Math.max(latDiff, lngDiff);
-    const zoom = Math.min(Math.round(Math.log(360 / maxDiff) / Math.log(2)), 18);
-    return zoom;
-  }
 
   /**
    * Get the search suggestions from nominatim
@@ -255,8 +172,9 @@ class Home extends React.Component {
     }
     clearTimeout(this.suggestionTimeout);
     this.suggestionTimeout = setTimeout(async () => {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`);
-      const data = await response.json();
+      const data = await this.memoFetcher.fetch(
+        `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`,
+      );
       const searchSuggestions = data.map(place => {
         const placeData = {
           displayName: place?.display_name || "Unknown location",
@@ -393,6 +311,7 @@ class Home extends React.Component {
 
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
           <BlockTitle>{address}</BlockTitle>
+          <WikiInfo place={this.state.place} />
           <Button
             round
             outline
