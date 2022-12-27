@@ -4,9 +4,8 @@
  * @param {{ lat: number, lng: number}  | undefined } userInputCoords
  * @returns {any}
  */
-export function getPlaceByNominatimData(placeData, userInputCoords) {
+export const getPlaceByNominatimData = (placeData, userInputCoords) => {
   if (placeData === undefined) return;
-  console.log(placeData);
   let place = {
     name: placeData?.display_name || "Unknown location",
     address: {
@@ -42,11 +41,8 @@ export function getPlaceByNominatimData(placeData, userInputCoords) {
     searchedByPlace: false,
     searchedByAddress: false,
   };
-  console.log(place);
-  console.log(placeData?.extratags?.wikidata);
-  console.log(placeData?.extratags?.wikipedia);
   return place;
-}
+};
 
 /**
  * Get the zoom level by a given bounding box
@@ -55,7 +51,7 @@ export function getPlaceByNominatimData(placeData, userInputCoords) {
  * @see https://wiki.openstreetmap.org/wiki/Zoom_levels
  * @see https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Zoom_levels
  */
-export function getZoomByBoundingBox(boundingbox) {
+export const getZoomByBoundingBox = boundingbox => {
   if (boundingbox === undefined) return undefined;
 
   const lat1 = parseFloat(`${boundingbox[0]}`);
@@ -67,4 +63,19 @@ export function getZoomByBoundingBox(boundingbox) {
   const maxDiff = Math.max(latDiff, lngDiff);
   const zoom = Math.min(Math.round(Math.log(360 / maxDiff) / Math.log(2)), 18);
   return zoom;
-}
+};
+
+/**
+ * Get coordinates from a string
+ * @param {string} text
+ * @returns {{lat: number, lng: number} | undefined} undefined if no coordinates were found
+ */
+export const getCoordsFromSearchText = text => {
+  const coordinateRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
+  coordinateRegex.test(text);
+  const match = text.match(coordinateRegex);
+  if (!match) return undefined;
+  const lat = parseFloat(match[1]);
+  const lng = parseFloat(match[3]);
+  return { lat: lat, lng: lng };
+};

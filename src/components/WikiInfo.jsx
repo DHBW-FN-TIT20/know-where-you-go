@@ -18,6 +18,7 @@ class WikiInfo extends React.Component {
   }
 
   async componentDidUpdate(prevProps) {
+    // if nothing changed do nothing
     if (
       prevProps.place.name === this.props.place.name &&
       prevProps.place.wikidata === this.props.place.wikidata &&
@@ -29,12 +30,26 @@ class WikiInfo extends React.Component {
       return;
     }
 
+    // if no place was given show nothing
+    if (
+      this.props.place.name === undefined ||
+      this.props.place.name === "" ||
+      this.props.place.userInputCoords === undefined ||
+      this.props.place.userInputCoords.lat === undefined ||
+      this.props.place.userInputCoords.lng === undefined
+    ) {
+      this.setState({
+        isLoading: false,
+        noInfoFound: false,
+        noPlaceGiven: true,
+      });
+      return;
+    }
+
+    // if a new place was given load the information
     this.setState({
       isLoading: true,
       noInfoFound: false,
-      title: "",
-      description: "",
-      image: "",
       noPlaceGiven: false,
     });
     this.place = this.props.place;
@@ -74,6 +89,8 @@ class WikiInfo extends React.Component {
    */
   takeNextBiggerPlace = async () => {
     const newZoomLevel = this.place.zoomLevel - 1;
+
+    // if the zoom level is 0 no information was found
     if (this.place.zoomLevel === 0) {
       this.setState({
         isLoading: false,
@@ -81,12 +98,13 @@ class WikiInfo extends React.Component {
       });
       return;
     }
+
+    // get the new place information
     const response = await fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.place.userInputCoords.lat}&lon=${this.place.userInputCoords.lng}&extratags=1&zoom=${newZoomLevel}&addressdetails=1`,
     );
     const data = await response.json();
-
     if (data.error) {
       this.setState({
         isLoading: false,
@@ -102,6 +120,8 @@ class WikiInfo extends React.Component {
       description: "",
       image: "",
     });
+
+    // update the place information and try to load the wiki info again
     place.zoomLevel = newZoomLevel;
     this.place = place;
     await this.loadWikiInfo(place.wikipedia, place.wikidata, place.name);
@@ -136,14 +156,18 @@ class WikiInfo extends React.Component {
   loadWikiInfoByWikidata = async wikidata => {
     if (wikidata === undefined || wikidata === "") return false;
 
+    // get the wikipedia tag for the given wikidata id in the preferred language
+    const preferredLanguageWiki = "dewiki";
     const response = await fetch(
       // eslint-disable-next-line max-len
-      `https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=${wikidata}&origin=*&sitefilter=dewiki`,
+      `https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=${wikidata}&origin=*&sitefilter=${preferredLanguageWiki}`,
     );
     const data = await response.json();
-    if (!data.entities[wikidata].sitelinks?.dewiki) {
+    if (!data.entities[wikidata]?.sitelinks[preferredLanguageWiki]) {
       return false;
     }
+
+    // load the information for the wikipedia tag
     const wikipediaTag = data.entities[wikidata].sitelinks.dewiki.title;
     return await this.loadWikiInfoByWikipediaTag(wikipediaTag);
   };
@@ -160,9 +184,10 @@ class WikiInfo extends React.Component {
       `https://de.wikipedia.org/w/api.php?action=query&format=json&list=search&formatversion=2&origin=*&srsearch=${searchText}`,
     );
     const data = await response.json();
-    if (data.query.search?.length === 0) {
+    if (data.query?.search?.length === 0) {
       return;
     }
+
     return await this.loadWikiInfoByWikipediaTag(data.query.search[0].title);
   };
 
@@ -197,19 +222,5 @@ class WikiInfo extends React.Component {
     );
   }
 }
-
-// define the types of the properties that are passed to the component
-WikiInfo.prototype.props = /** @type { { 
-  place: {
-    name: string,
-    wikidata: string,
-    wikipedia: string,
-    zoomLevel: number,
-    userInputCoords: {
-      lat: number,
-      lng: number,
-    },
-  }
-} } */ ({});
 
 export default WikiInfo;

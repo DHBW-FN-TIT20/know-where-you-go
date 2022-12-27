@@ -6,7 +6,7 @@ import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
 import OutlinePolygon from "../components/OutlinePolygon";
-import { getPlaceByNominatimData } from "../js/helpers";
+import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 
 const SEARCH_BAR_HEIGHT = 70;
@@ -50,7 +50,6 @@ class Home extends React.Component {
 
     // get the current location
     navigator.geolocation.getCurrentPosition(position => {
-      console.log(position);
       this.setState({
         currentLocation: {
           lat: position.coords.latitude,
@@ -80,13 +79,11 @@ class Home extends React.Component {
    * @param {string} searchText
    */
   updatePlaceBySearch = async searchText => {
-    const coords = this.getCoordsFromSearchText(searchText);
+    const coords = getCoordsFromSearchText(searchText);
 
     let place = {};
     if (coords !== undefined) place = await this.getPlaceByCoords(coords);
     else place = await this.getPlaceByText(searchText);
-
-    console.log("place in updatePlaceBySearch", place);
 
     if (place === undefined) return;
     this.mapNeedsUpdate = true;
@@ -123,23 +120,6 @@ class Home extends React.Component {
       snapSheetToState: 1,
       selectedCoords: coords,
     });
-    console.log("state in updatePlaceByCoords", this.state);
-  };
-
-  /**
-   * Get coordinates from a string
-   * @param {string} text
-   * @returns {{lat: number, lng: number} | undefined} undefined if no coordinates were found
-   */
-  getCoordsFromSearchText = text => {
-    const coordinateRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
-    coordinateRegex.test(text);
-    const match = text.match(coordinateRegex);
-    if (!match) return undefined;
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[3]);
-    console.log(`lat: ${lat}, lng: ${lng}`);
-    return { lat: lat, lng: lng };
   };
 
   /**
@@ -161,23 +141,22 @@ class Home extends React.Component {
   /**
    * Get a place from nominatim by coordinates
    * @param {{lat: number, lng: number}} coords
+   * @param {number} zoom
    * @returns {Promise<any>}
    */
   getPlaceByCoords = async (coords, zoom = 20) => {
     const response = await fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=${
-        zoom + 1
+        parseInt(`${zoom}`) + 1
       }&addressdetails=1`,
     );
     const data = await response.json();
-    console.log(data);
     if (data === undefined) return;
     const place = getPlaceByNominatimData(data, coords);
     if (place?.realCoords?.lat === undefined || place?.realCoords?.lng === undefined) {
       place.realCoords = coords;
     }
-    console.log("place in getPlaceByCoords", place);
     return place;
   };
 
