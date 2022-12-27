@@ -2,6 +2,7 @@ import { Block, BlockTitle } from "framework7-react";
 import { getPlaceByNominatimData } from "../js/helpers";
 
 import React from "react";
+import MemoFetcher from "../js/memo-fetcher";
 
 class WikiInfo extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class WikiInfo extends React.Component {
       noPlaceGiven: true,
     };
     this.place = props.place;
+    this.memoFetcher = new MemoFetcher();
   }
 
   async componentDidUpdate(prevProps) {
@@ -75,6 +77,7 @@ class WikiInfo extends React.Component {
       return;
     }
 
+    // TODO: try out if results are better with or without the text search
     if (searchText && (await this.loadWikiInfoBySearch(searchText))) {
       return;
     }
@@ -100,11 +103,10 @@ class WikiInfo extends React.Component {
     }
 
     // get the new place information
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.place.userInputCoords.lat}&lon=${this.place.userInputCoords.lng}&extratags=1&zoom=${newZoomLevel}&addressdetails=1`,
     );
-    const data = await response.json();
     if (data.error) {
       this.setState({
         isLoading: false,
@@ -135,11 +137,10 @@ class WikiInfo extends React.Component {
   loadWikiInfoByWikipediaTag = async wikipediaTag => {
     if (wikipediaTag === undefined || wikipediaTag === "") return false;
 
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://de.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|pageimages&formatversion=2&origin=*&exintro=1&explaintext=1&exsentences=3&exlimit=1&piprop=original&titles=${wikipediaTag}`,
     );
-    const data = await response.json();
     if (data.query.pages === undefined || data.query.pages.length === 0) {
       return false;
     }
@@ -158,11 +159,10 @@ class WikiInfo extends React.Component {
 
     // get the wikipedia tag for the given wikidata id in the preferred language
     const preferredLanguageWiki = "dewiki";
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=${wikidata}&origin=*&sitefilter=${preferredLanguageWiki}`,
     );
-    const data = await response.json();
     if (!data.entities[wikidata]?.sitelinks[preferredLanguageWiki]) {
       return false;
     }
@@ -179,11 +179,10 @@ class WikiInfo extends React.Component {
    */
   loadWikiInfoBySearch = async searchText => {
     if (searchText === undefined || searchText === "" || searchText === "Unknown location") return false;
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://de.wikipedia.org/w/api.php?action=query&format=json&list=search&formatversion=2&origin=*&srsearch=${searchText}`,
     );
-    const data = await response.json();
     if (data.query?.search?.length === 0) {
       return;
     }

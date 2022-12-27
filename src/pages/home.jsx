@@ -8,6 +8,7 @@ import AccuracyCircle from "../components/AccuracyCircle";
 import OutlinePolygon from "../components/OutlinePolygon";
 import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
+import MemoFetcher from "../js/memo-fetcher";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -42,6 +43,7 @@ class Home extends React.Component {
       lat: 47.665575312188025,
       lng: 9.447241869601651,
     };
+    this.memoFetcher = new MemoFetcher();
   }
 
   componentDidMount() {
@@ -128,10 +130,9 @@ class Home extends React.Component {
    * @returns Promise<Place>
    */
   getPlaceByText = async searchText => {
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&addressdetails=1&limit=1&extratags=1`,
     );
-    const data = await response.json();
     if (data[0] === undefined) return;
     const place = getPlaceByNominatimData(data[0], undefined);
     place.userInputCoords = place.realCoords;
@@ -145,13 +146,12 @@ class Home extends React.Component {
    * @returns {Promise<any>}
    */
   getPlaceByCoords = async (coords, zoom = 20) => {
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&extratags=1&zoom=${
         parseInt(`${zoom}`) + 1
       }&addressdetails=1`,
     );
-    const data = await response.json();
     if (data === undefined) return;
     const place = getPlaceByNominatimData(data, coords);
     if (place?.realCoords?.lat === undefined || place?.realCoords?.lng === undefined) {
@@ -172,8 +172,9 @@ class Home extends React.Component {
     }
     clearTimeout(this.suggestionTimeout);
     this.suggestionTimeout = setTimeout(async () => {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`);
-      const data = await response.json();
+      const data = await this.memoFetcher.fetch(
+        `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`,
+      );
       const searchSuggestions = data.map(place => {
         const placeData = {
           displayName: place?.display_name || "Unknown location",
