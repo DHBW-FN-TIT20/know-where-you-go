@@ -68,7 +68,7 @@ class WikiInfo extends React.Component {
    * @param {string} searchText
    * @returns {Promise<void>}
    */
-  async loadWikiInfo(wikipediaTag, wikidata, searchText) {
+  async loadWikiInfo(wikipediaTag, wikidata) {
     if (wikipediaTag && (await this.loadWikiInfoByWikipediaTag(wikipediaTag))) {
       return;
     }
@@ -77,10 +77,11 @@ class WikiInfo extends React.Component {
       return;
     }
 
-    // TODO: try out if results are better with or without the text search
-    if (searchText && (await this.loadWikiInfoBySearch(searchText))) {
-      return;
-    }
+    // this fulltextsearch is disabled because there are better results with the other methods
+    // TODO: maybe enable it in the future again
+    // if (searchText && (await this.loadWikiInfoBySearch(searchText))) {
+    //   return;
+    // }
 
     // if no information was found try the next smaller zoom level
     await this.takeNextBiggerPlace();
