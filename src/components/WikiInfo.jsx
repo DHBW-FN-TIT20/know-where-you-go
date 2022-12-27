@@ -1,4 +1,4 @@
-import { Block, BlockTitle } from "framework7-react";
+import { Block, BlockTitle, Icon, Link } from "framework7-react";
 import { getPlaceByNominatimData } from "../js/helpers";
 
 import React from "react";
@@ -145,7 +145,7 @@ class WikiInfo extends React.Component {
     if (data.query.pages === undefined || data.query.pages.length === 0) {
       return false;
     }
-
+    console.log(data.query.pages);
     this.updateInfoByWikiPage(data.query.pages[0]);
     return true;
   };
@@ -215,7 +215,11 @@ class WikiInfo extends React.Component {
 
     return (
       <>
-        <BlockTitle>{this.state.title}</BlockTitle>
+        <BlockTitle>
+          <Link external target="_blank" href={`https://de.wikipedia.org/wiki/${this.state.title}`}>
+            {this.state.title} <Icon f7="link" size={12} />
+          </Link>
+        </BlockTitle>
         <Block>{this.state.description}</Block>
         <Block>{this.state.image && <img src={this.state.image} />}</Block>
       </>
