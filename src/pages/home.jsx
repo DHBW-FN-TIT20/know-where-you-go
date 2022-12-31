@@ -9,6 +9,8 @@ import OutlinePolygon from "../components/OutlinePolygon";
 import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
+import L from "leaflet";
+import "leaflet-routing-machine";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -25,11 +27,14 @@ class Home extends React.Component {
       searchText: "",
       place: {},
       mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
-      selectedCoords: undefined,
+      selectedCoords: { lat: undefined, lng: undefined },
       searchSuggestions: [],
       showSearchSuggestions: false,
+      showRouting: true,
+      routingDistance: 0,
+      routingDuration: 0,
+      showRoutingDistanceAndDuration: false,
     };
-
     this.sheetHeightStates = [
       SEARCH_BAR_HEIGHT,
       window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
@@ -38,12 +43,14 @@ class Home extends React.Component {
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
     this.mapSlowAnimation = true;
+    this.routingNeedsUpdate = false;
     this.mapZoom = 4;
     this.mapCenter = {
       lat: 47.665575312188025,
       lng: 9.447241869601651,
     };
     this.memoFetcher = new MemoFetcher();
+    this.routingMachine = undefined;
   }
 
   componentDidMount() {
@@ -89,6 +96,7 @@ class Home extends React.Component {
 
     if (place === undefined) return;
     this.mapNeedsUpdate = true;
+    this.routingNeedsUpdate = true;
     this.mapZoom = place.zoomLevel;
     this.mapCenter = {
       lat: place.realCoords.lat,
@@ -99,6 +107,7 @@ class Home extends React.Component {
       snapSheetToState: 1,
       selectedCoords: place.realCoords,
       showSearchSuggestions: false,
+      showRouting: true,
     });
   };
 
@@ -116,11 +125,13 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
+    this.routingNeedsUpdate = true;
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
       snapSheetToState: 1,
       selectedCoords: coords,
+      showRouting: true,
     });
   };
 
@@ -194,6 +205,7 @@ class Home extends React.Component {
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
     if (this.mapNeedsUpdate) {
+      console.log("update map");
       map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.mapSlowAnimation ? 4 : 1 });
       this.mapNeedsUpdate = false;
       this.mapSlowAnimation = false;
@@ -211,6 +223,57 @@ class Home extends React.Component {
       },
     });
 
+    // routing
+    if (!this.routingNeedsUpdate) return null;
+
+    if (this.routingMachine) map.removeControl(this.routingMachine);
+    if (
+      this.state.currentLocation.lat === undefined ||
+      this.state.currentLocation.lng === undefined ||
+      this.state.selectedCoords?.lat === undefined ||
+      this.state.selectedCoords?.lng === undefined ||
+      this.state.currentLocation.lat === this.state.selectedCoords.lat ||
+      this.state.currentLocation.lng === this.state.selectedCoords.lng ||
+      this.state.showRouting === false
+    )
+      return null;
+
+    this.routingMachine = L.Routing.control({
+      waypoints: [
+        L.latLng(this.state.currentLocation.lat, this.state.currentLocation.lng),
+        L.latLng(this.state.selectedCoords.lat, this.state.selectedCoords.lng),
+      ],
+      routeWhileDragging: false,
+      // @ts-ignore
+      createMarker: () => null,
+      fitSelectedRoutes: false,
+      draggableWaypoints: false,
+      lineOptions: {
+        styles: [{ color: "blue", opacity: 1, weight: 2 }],
+        extendToWaypoints: true,
+        missingRouteTolerance: 0,
+      },
+      addWaypoints: false,
+      router: L.Routing.osrmv1({
+        serviceUrl: "https://router.project-osrm.org/route/v1",
+      }),
+      collapsible: true,
+    });
+
+    // if a route is found, check if it is too near to the current location and if so, don't show it
+    this.routingMachine.on("routesfound", event => {
+      if (event.routes[0] === undefined) return;
+      const minDistance = 400;
+      if (event.routes[0].summary.totalDistance < minDistance) this.routingNeedsUpdate = true;
+      this.setState({
+        routingDistance: event.routes[0].summary.totalDistance,
+        routingTime: event.routes[0].summary.totalTime,
+        showRouting: event.routes[0].summary.totalDistance > minDistance,
+        showRoutingDistanceAndDuration: event.routes[0].summary.totalDistance > minDistance,
+      });
+    });
+    this.routingMachine.addTo(map);
+    this.routingNeedsUpdate = false;
     return null;
   };
 
@@ -308,8 +371,12 @@ class Home extends React.Component {
                 );
               })}
           </List>
-
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
+          {this.state.showRoutingDistanceAndDuration && (
+            <BlockTitle>
+              {Math.round(this.state.routingDistance / 1000)} km, {Math.round(this.state.routingTime / 60)} min
+            </BlockTitle>
+          )}
           <BlockTitle>{address}</BlockTitle>
           <WikiInfo place={this.state.place} />
           <Button
