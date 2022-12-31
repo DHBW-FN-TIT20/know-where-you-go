@@ -1,6 +1,6 @@
 import React from "react";
 import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle } from "framework7-react";
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
