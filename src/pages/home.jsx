@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle } from "framework7-react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -34,6 +34,7 @@ class Home extends React.Component {
       routingDistance: 0,
       routingDuration: 0,
       showRoutingDistanceAndDuration: false,
+      tileLayerStyle: "map",
     };
     this.sheetHeightStates = [
       SEARCH_BAR_HEIGHT,
@@ -44,6 +45,7 @@ class Home extends React.Component {
     this.mapNeedsUpdate = false;
     this.mapSlowAnimation = true;
     this.routingNeedsUpdate = false;
+    this.tileLayerNeedsUpdate = true;
     this.mapZoom = 4;
     this.mapCenter = {
       lat: 47.665575312188025,
@@ -51,6 +53,7 @@ class Home extends React.Component {
     };
     this.memoFetcher = new MemoFetcher();
     this.routingMachine = undefined;
+    this.tileLayer = undefined;
   }
 
   componentDidMount() {
@@ -197,6 +200,15 @@ class Home extends React.Component {
   };
 
   /**
+   * Toggles the tile layer from satellite to map and vice versa
+   * @returns {void}
+   */
+  toggleTileLayer = () => {
+    this.tileLayerNeedsUpdate = true;
+    this.setState({ tileLayerStyle: this.state.tileLayerStyle === "satellite" ? "map" : "satellite" });
+  };
+
+  /**
    * Small Component to interact with the leaflet map
    * @returns {null}
    */
@@ -222,6 +234,20 @@ class Home extends React.Component {
         this.updatePlaceByCoords(event.latlng, 18, true);
       },
     });
+
+    // tile layer
+    if (this.tileLayerNeedsUpdate) {
+      if (this.tileLayer) map.removeLayer(this.tileLayer);
+      this.tileLayer = L.tileLayer(
+        this.state.tileLayerStyle === "satellite"
+          ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution: this.state.tileLayerStyle === "satellite" ? "Tiles &copy; Esri" : "Tiles &copy; OpenStreetMap",
+        },
+      ).addTo(map);
+      this.tileLayerNeedsUpdate = false;
+    }
 
     // routing
     if (!this.routingNeedsUpdate) return null;
@@ -288,6 +314,10 @@ class Home extends React.Component {
 
     return (
       <Page name="home">
+        <Toggle
+          style={{ position: "absolute", top: "5px", right: "5px", zIndex: 1000 }}
+          onChange={this.toggleTileLayer}
+        />
         <MapContainer
           center={[0, 0]}
           zoom={2}
@@ -300,10 +330,6 @@ class Home extends React.Component {
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
             radius={this.state.currentLocation.accuracy}
             visible={this.state.currentLocation.accuracy !== 0}
-          />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <LocationMarker
             iconUrl={"img/OwnLocationMarker.png"}
