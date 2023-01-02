@@ -55,7 +55,7 @@ class WikiInfo extends React.Component {
       noPlaceGiven: false,
     });
     this.place = this.props.place;
-    await this.loadWikiInfo(this.props.place.wikipedia, this.props.place.wikidata, this.props.place.name);
+    await this.loadWikiInfo(this.props.place.wikipedia, this.props.place.wikidata);
   }
 
   /**
@@ -65,7 +65,6 @@ class WikiInfo extends React.Component {
    * It updates the state with the loaded information
    * @param {string} wikipediaTag
    * @param {string} wikidata
-   * @param {string} searchText
    * @returns {Promise<void>}
    */
   async loadWikiInfo(wikipediaTag, wikidata) {
@@ -127,7 +126,7 @@ class WikiInfo extends React.Component {
     // update the place information and try to load the wiki info again
     place.zoomLevel = newZoomLevel;
     this.place = place;
-    await this.loadWikiInfo(place.wikipedia, place.wikidata, place.name);
+    await this.loadWikiInfo(place.wikipedia, place.wikidata);
   };
 
   /**
@@ -200,6 +199,7 @@ class WikiInfo extends React.Component {
     this.setState({
       isLoading: false,
       noInfoFound: false,
+      noPlaceGiven: false,
       title: page.title,
       description: page.extract.slice(0, 600) + (page.extract.length > 600 ? "..." : ""),
       image: page.original ? page.original.source : "",
