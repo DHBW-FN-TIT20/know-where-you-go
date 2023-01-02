@@ -241,7 +241,7 @@ class Home extends React.Component {
       this.tileLayer = L.tileLayer(
         this.state.tileLayerStyle === "satellite"
           ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          : "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
         {
           attribution: this.state.tileLayerStyle === "satellite" ? "Tiles &copy; Esri" : "Tiles &copy; OpenStreetMap",
         },
