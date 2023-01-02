@@ -1,4 +1,8 @@
 /* Your app custom styles here */
+:root {
+  --f7-block-title-white-space: auto;
+}
+
 .leaflet-control-container .leaflet-routing-container-hide .leaflet-routing-container .leaflet-top .leaflet-right {
   display: none;
 }
