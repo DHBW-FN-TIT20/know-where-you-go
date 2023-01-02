@@ -11,7 +11,7 @@ class SnappingSheet extends React.Component {
     this.state = {
       sheetOpened: true,
       sheetHeight: this.props.snapHeightStates[this.props.currentState || 0],
-      sheetHeightTransitionStyle: "0.3s ease-in-out",
+      sheetHeightTransitionStyle: "0.3s ease-out",
     };
   }
 
@@ -124,17 +124,12 @@ class SnappingSheet extends React.Component {
     }
 
     return (
-      <div ref={this.sheetScrollAreaRef}>
-        <Sheet
-          style={{
-            height: this.state.sheetHeight,
-            transition: this.state.sheetHeightTransitionStyle,
-            overflow: "hidden",
-          }}
-          opened={true}
-        >
-          {this.props.children}
-        </Sheet>
+      <div
+        ref={this.sheetScrollAreaRef}
+        className="sheet-modal sheet-modal-bottom modal-in"
+        style={{ height: this.state.sheetHeight }}
+      >
+        {this.props.children}
       </div>
     );
   }

@@ -292,33 +292,41 @@ class Home extends React.Component {
               this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
             }}
           />
-          <List>
-            {this.state.showSearchSuggestions &&
-              this.state.searchSuggestions.map((suggestion, index) => {
-                return (
-                  <ListItem
-                    key={index}
-                    title={suggestion["displayName"]}
-                    onClick={() => {
-                      this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                      this.updatePlaceBySearch(suggestion["displayName"]);
-                    }}
-                    style={{ cursor: "pointer" }}
-                  />
-                );
-              })}
-          </List>
 
-          <BlockTitle medium>{this.state.place.name}</BlockTitle>
-          <BlockTitle>{address}</BlockTitle>
-          <WikiInfo place={this.state.place} />
-          <Button
-            round
-            outline
-            href="/impressum"
-            text="Impressum"
-            style={{ width: "fit-content", marginLeft: "50%", transform: "translateX(-50%)" }}
-          ></Button>
+          <div
+            className="sheet-modal-inner"
+            style={{
+              overflow: "hidden scroll",
+              height: `calc(100% - ${SEARCH_BAR_HEIGHT}px)`,
+            }}
+          >
+            <List>
+              {this.state.showSearchSuggestions &&
+                this.state.searchSuggestions.map((suggestion, index) => {
+                  return (
+                    <ListItem
+                      key={index}
+                      title={suggestion["displayName"]}
+                      onClick={() => {
+                        this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
+                        this.updatePlaceBySearch(suggestion["displayName"]);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
+            </List>
+            <BlockTitle medium>{this.state.place.name}</BlockTitle>
+            <BlockTitle>{address}</BlockTitle>
+            <WikiInfo place={this.state.place} />
+            <Button
+              round
+              outline
+              href="/impressum"
+              text="Impressum"
+              style={{ width: "fit-content", marginLeft: "50%", transform: "translateX(-50%)" }}
+            ></Button>
+          </div>
         </SnappingSheet>
       </Page>
     );
