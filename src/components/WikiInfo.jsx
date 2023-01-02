@@ -199,6 +199,7 @@ class WikiInfo extends React.Component {
     this.setState({
       isLoading: false,
       noInfoFound: false,
+      noPlaceGiven: false,
       title: page.title,
       description: page.extract.slice(0, 600) + (page.extract.length > 600 ? "..." : ""),
       image: page.original ? page.original.source : "",

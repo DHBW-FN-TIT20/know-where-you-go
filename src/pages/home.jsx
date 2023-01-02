@@ -32,7 +32,7 @@ class Home extends React.Component {
       showSearchSuggestions: false,
       showRouting: true,
       routingDistance: 0,
-      routingDuration: 0,
+      routingTime: 0,
       showRoutingDistanceAndDuration: false,
       tileLayerStyle: "map",
     };
@@ -398,11 +398,18 @@ class Home extends React.Component {
               })}
           </List>
           <BlockTitle medium>{this.state.place.name}</BlockTitle>
-          {this.state.showRoutingDistanceAndDuration && (
-            <BlockTitle>
-              {Math.round(this.state.routingDistance / 1000)} km, {Math.round(this.state.routingTime / 60)} min
-            </BlockTitle>
-          )}
+          <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
+            {Math.round(this.state.routingDistance / 1000)} km,{" "}
+            {
+              // eslint-disable-next-line max-len
+              this.state.routingTime > 3600
+                ? Math.round(this.state.routingTime / 3600) +
+                  " h " +
+                  Math.round((this.state.routingTime % 3600) / 60) +
+                  " min"
+                : Math.round(this.state.routingTime / 60) + " min"
+            }
+          </BlockTitle>
           <BlockTitle>{address}</BlockTitle>
           <WikiInfo place={this.state.place} />
           <Button
