@@ -317,7 +317,7 @@ class Home extends React.Component {
             outline
             href="/impressum"
             text="Impressum"
-            style={{ width: "fit-content", marginLeft: "50%" }}
+            style={{ width: "fit-content", marginLeft: "50%", transform: "translateX(-50%)" }}
           ></Button>
         </SnappingSheet>
       </Page>
