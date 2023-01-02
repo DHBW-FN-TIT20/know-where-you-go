@@ -1,5 +1,4 @@
 import React from "react";
-import { Sheet } from "framework7-react";
 
 class SnappingSheet extends React.Component {
   dragStartPositionY = 0;
