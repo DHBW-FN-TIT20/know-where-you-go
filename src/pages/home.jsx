@@ -89,13 +89,19 @@ class Home extends React.Component {
   /**
    * Search for a place by text or coordinates
    * @param {string} searchText
+   * @param {string | undefined} osmID
+   * @returns Promise<Place>
    */
-  updatePlaceBySearch = async searchText => {
-    const coords = getCoordsFromSearchText(searchText);
-
+  updatePlaceBySearchOrOsmID = async (searchText, osmID = undefined) => {
+    // if a osmID is given, use it, otherwise use the search text
     let place = {};
-    if (coords !== undefined) place = await this.getPlaceByCoords(coords);
-    else place = await this.getPlaceByText(searchText);
+    if (osmID !== undefined) {
+      place = await this.getPlaceByOsmID(osmID);
+    } else {
+      const coords = getCoordsFromSearchText(searchText);
+      if (coords !== undefined) place = await this.getPlaceByCoords(coords);
+      else place = await this.getPlaceByText(searchText);
+    }
 
     if (place === undefined) return;
     this.mapNeedsUpdate = true;
@@ -175,6 +181,21 @@ class Home extends React.Component {
   };
 
   /**
+   * Get a place from nominatim by osmID
+   * @param {string} osmID
+   * @returns {Promise<any>}
+   */
+  getPlaceByOsmID = async osmID => {
+    const data = await this.memoFetcher.fetch(
+      // eslint-disable-next-line max-len
+      `https://nominatim.openstreetmap.org/lookup?format=json&osm_ids=${osmID}&extratags=1&addressdetails=1`,
+    );
+    if (data[0] === undefined) return;
+    const place = getPlaceByNominatimData(data[0], undefined);
+    return place;
+  };
+
+  /**
    * Get the search suggestions from nominatim
    * @param {string} searchText
    * @returns {Promise<void>}
@@ -187,11 +208,16 @@ class Home extends React.Component {
     clearTimeout(this.suggestionTimeout);
     this.suggestionTimeout = setTimeout(async () => {
       const data = await this.memoFetcher.fetch(
-        `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`,
+        // eslint-disable-next-line max-len
+        `https://photon.komoot.io/api/?q=${searchText}&limit=5&lang=de&lat=${this.state.currentLocation.lat}&lon=${this.state.currentLocation.lng}`,
       );
-      const searchSuggestions = data.map(place => {
+      const searchSuggestions = data.features.map(place => {
         const placeData = {
-          displayName: place?.display_name || "Unknown location",
+          displayName:
+            place?.properties?.name ||
+            // eslint-disable-next-line max-len
+            `${place?.properties?.street} ${place?.properties?.housenumber} ${place?.properties?.postcode} ${place?.properties?.city}`,
+          osmID: place?.properties?.osm_type + place?.properties?.osm_id,
         };
         return placeData;
       });
@@ -217,7 +243,6 @@ class Home extends React.Component {
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
     if (this.mapNeedsUpdate) {
-      console.log("update map");
       map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.mapSlowAnimation ? 4 : 1 });
       this.mapNeedsUpdate = false;
       this.mapSlowAnimation = false;
@@ -361,12 +386,12 @@ class Home extends React.Component {
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
             onChange={event => {
-              this.setState({ searchText: event.target.value });
+              this.setState({ searchText: event.target.value, showSearchSuggestions: true });
               this.updateSearchSuggestions(event.target.value);
             }}
             onSubmit={event => {
               event.target.blur(); // hide keyboard TODO: this is not working yet
-              this.updatePlaceBySearch(this.state.searchText);
+              this.updatePlaceBySearchOrOsmID(this.state.searchText);
             }}
             onClickClear={() => {
               this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
@@ -390,7 +415,7 @@ class Home extends React.Component {
                     title={suggestion["displayName"]}
                     onClick={() => {
                       this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                      this.updatePlaceBySearch(suggestion["displayName"]);
+                      this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
                     }}
                     style={{ cursor: "pointer" }}
                   />
