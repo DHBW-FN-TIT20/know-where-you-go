@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle, BlockHeader } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -442,7 +442,7 @@ class Home extends React.Component {
                   : Math.round(this.state.routingTime / 60) + " min"
               }
             </BlockTitle>
-            <BlockTitle>{address}</BlockTitle>
+            <BlockHeader>{address}</BlockHeader>
             <WikiInfo place={this.state.place} />
             <Button
               round

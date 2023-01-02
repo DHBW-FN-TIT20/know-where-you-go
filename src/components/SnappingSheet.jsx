@@ -126,7 +126,10 @@ class SnappingSheet extends React.Component {
       <div
         ref={this.sheetScrollAreaRef}
         className="sheet-modal sheet-modal-bottom modal-in"
-        style={{ height: this.state.sheetHeight }}
+        style={{
+          height: this.state.sheetHeight,
+          transition: this.state.sheetHeightTransitionStyle,
+        }}
       >
         {this.props.children}
       </div>
