@@ -1,6 +1,6 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem } from "framework7-react";
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle } from "framework7-react";
+import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
@@ -9,6 +9,8 @@ import OutlinePolygon from "../components/OutlinePolygon";
 import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
+import L from "leaflet";
+import "leaflet-routing-machine";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -25,11 +27,15 @@ class Home extends React.Component {
       searchText: "",
       place: {},
       mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
-      selectedCoords: undefined,
+      selectedCoords: { lat: undefined, lng: undefined },
       searchSuggestions: [],
       showSearchSuggestions: false,
+      showRouting: true,
+      routingDistance: 0,
+      routingTime: 0,
+      showRoutingDistanceAndDuration: false,
+      tileLayerStyle: "map",
     };
-
     this.sheetHeightStates = [
       SEARCH_BAR_HEIGHT,
       window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
@@ -38,12 +44,16 @@ class Home extends React.Component {
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
     this.mapSlowAnimation = true;
+    this.routingNeedsUpdate = false;
+    this.tileLayerNeedsUpdate = true;
     this.mapZoom = 4;
     this.mapCenter = {
       lat: 47.665575312188025,
       lng: 9.447241869601651,
     };
     this.memoFetcher = new MemoFetcher();
+    this.routingMachine = undefined;
+    this.tileLayer = undefined;
   }
 
   componentDidMount() {
@@ -79,16 +89,23 @@ class Home extends React.Component {
   /**
    * Search for a place by text or coordinates
    * @param {string} searchText
+   * @param {string | undefined} osmID
+   * @returns Promise<Place>
    */
-  updatePlaceBySearch = async searchText => {
-    const coords = getCoordsFromSearchText(searchText);
-
+  updatePlaceBySearchOrOsmID = async (searchText, osmID = undefined) => {
+    // if a osmID is given, use it, otherwise use the search text
     let place = {};
-    if (coords !== undefined) place = await this.getPlaceByCoords(coords);
-    else place = await this.getPlaceByText(searchText);
+    if (osmID !== undefined) {
+      place = await this.getPlaceByOsmID(osmID);
+    } else {
+      const coords = getCoordsFromSearchText(searchText);
+      if (coords !== undefined) place = await this.getPlaceByCoords(coords);
+      else place = await this.getPlaceByText(searchText);
+    }
 
     if (place === undefined) return;
     this.mapNeedsUpdate = true;
+    this.routingNeedsUpdate = true;
     this.mapZoom = place.zoomLevel;
     this.mapCenter = {
       lat: place.realCoords.lat,
@@ -99,6 +116,7 @@ class Home extends React.Component {
       snapSheetToState: 1,
       selectedCoords: place.realCoords,
       showSearchSuggestions: false,
+      showRouting: true,
     });
   };
 
@@ -116,11 +134,13 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
+    this.routingNeedsUpdate = true;
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
       snapSheetToState: 1,
       selectedCoords: coords,
+      showRouting: true,
     });
   };
 
@@ -161,6 +181,21 @@ class Home extends React.Component {
   };
 
   /**
+   * Get a place from nominatim by osmID
+   * @param {string} osmID
+   * @returns {Promise<any>}
+   */
+  getPlaceByOsmID = async osmID => {
+    const data = await this.memoFetcher.fetch(
+      // eslint-disable-next-line max-len
+      `https://nominatim.openstreetmap.org/lookup?format=json&osm_ids=${osmID}&extratags=1&addressdetails=1`,
+    );
+    if (data[0] === undefined) return;
+    const place = getPlaceByNominatimData(data[0], undefined);
+    return place;
+  };
+
+  /**
    * Get the search suggestions from nominatim
    * @param {string} searchText
    * @returns {Promise<void>}
@@ -173,16 +208,30 @@ class Home extends React.Component {
     clearTimeout(this.suggestionTimeout);
     this.suggestionTimeout = setTimeout(async () => {
       const data = await this.memoFetcher.fetch(
-        `https://nominatim.openstreetmap.org/search?q=${searchText}&format=json&limit=5`,
+        // eslint-disable-next-line max-len
+        `https://photon.komoot.io/api/?q=${searchText}&limit=5&lang=de&lat=${this.state.currentLocation.lat}&lon=${this.state.currentLocation.lng}`,
       );
-      const searchSuggestions = data.map(place => {
+      const searchSuggestions = data.features.map(place => {
         const placeData = {
-          displayName: place?.display_name || "Unknown location",
+          displayName:
+            place?.properties?.name ||
+            // eslint-disable-next-line max-len
+            `${place?.properties?.street} ${place?.properties?.housenumber} ${place?.properties?.postcode} ${place?.properties?.city}`,
+          osmID: place?.properties?.osm_type + place?.properties?.osm_id,
         };
         return placeData;
       });
       this.setState({ searchSuggestions });
     }, 200);
+  };
+
+  /**
+   * Toggles the tile layer from satellite to map and vice versa
+   * @returns {void}
+   */
+  toggleTileLayer = () => {
+    this.tileLayerNeedsUpdate = true;
+    this.setState({ tileLayerStyle: this.state.tileLayerStyle === "satellite" ? "map" : "satellite" });
   };
 
   /**
@@ -211,6 +260,71 @@ class Home extends React.Component {
       },
     });
 
+    // tile layer
+    if (this.tileLayerNeedsUpdate) {
+      if (this.tileLayer) map.removeLayer(this.tileLayer);
+      this.tileLayer = L.tileLayer(
+        this.state.tileLayerStyle === "satellite"
+          ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          : "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+        {
+          attribution: this.state.tileLayerStyle === "satellite" ? "Tiles &copy; Esri" : "Tiles &copy; OpenStreetMap",
+        },
+      ).addTo(map);
+      this.tileLayerNeedsUpdate = false;
+    }
+
+    // routing
+    if (!this.routingNeedsUpdate) return null;
+
+    if (this.routingMachine) map.removeControl(this.routingMachine);
+    if (
+      this.state.currentLocation.lat === undefined ||
+      this.state.currentLocation.lng === undefined ||
+      this.state.selectedCoords?.lat === undefined ||
+      this.state.selectedCoords?.lng === undefined ||
+      this.state.currentLocation.lat === this.state.selectedCoords.lat ||
+      this.state.currentLocation.lng === this.state.selectedCoords.lng ||
+      this.state.showRouting === false
+    )
+      return null;
+
+    this.routingMachine = L.Routing.control({
+      waypoints: [
+        L.latLng(this.state.currentLocation.lat, this.state.currentLocation.lng),
+        L.latLng(this.state.selectedCoords.lat, this.state.selectedCoords.lng),
+      ],
+      routeWhileDragging: false,
+      // @ts-ignore
+      createMarker: () => null,
+      fitSelectedRoutes: false,
+      draggableWaypoints: false,
+      lineOptions: {
+        styles: [{ color: "blue", opacity: 1, weight: 2 }],
+        extendToWaypoints: true,
+        missingRouteTolerance: 0,
+      },
+      addWaypoints: false,
+      router: L.Routing.osrmv1({
+        serviceUrl: "https://router.project-osrm.org/route/v1",
+      }),
+      collapsible: true,
+    });
+
+    // if a route is found, check if it is too near to the current location and if so, don't show it
+    this.routingMachine.on("routesfound", event => {
+      if (event.routes[0] === undefined) return;
+      const minDistance = 400;
+      if (event.routes[0].summary.totalDistance < minDistance) this.routingNeedsUpdate = true;
+      this.setState({
+        routingDistance: event.routes[0].summary.totalDistance,
+        routingTime: event.routes[0].summary.totalTime,
+        showRouting: event.routes[0].summary.totalDistance > minDistance,
+        showRoutingDistanceAndDuration: event.routes[0].summary.totalDistance > minDistance,
+      });
+    });
+    this.routingMachine.addTo(map);
+    this.routingNeedsUpdate = false;
     return null;
   };
 
@@ -225,6 +339,10 @@ class Home extends React.Component {
 
     return (
       <Page name="home">
+        <Toggle
+          style={{ position: "absolute", top: "5px", right: "5px", zIndex: 1000 }}
+          onChange={this.toggleTileLayer}
+        />
         <MapContainer
           center={[0, 0]}
           zoom={2}
@@ -237,10 +355,6 @@ class Home extends React.Component {
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
             radius={this.state.currentLocation.accuracy}
             visible={this.state.currentLocation.accuracy !== 0}
-          />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <LocationMarker
             iconUrl={"img/OwnLocationMarker.png"}
@@ -272,12 +386,12 @@ class Home extends React.Component {
             }}
             placeholder="Place, address, or coordinates (lat, lng)"
             onChange={event => {
-              this.setState({ searchText: event.target.value });
+              this.setState({ searchText: event.target.value, showSearchSuggestions: true });
               this.updateSearchSuggestions(event.target.value);
             }}
             onSubmit={event => {
               event.target.blur(); // hide keyboard TODO: this is not working yet
-              this.updatePlaceBySearch(this.state.searchText);
+              this.updatePlaceBySearchOrOsmID(this.state.searchText);
             }}
             onClickClear={() => {
               this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
@@ -292,7 +406,6 @@ class Home extends React.Component {
               this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
             }}
           />
-
           <div
             className="sheet-modal-inner"
             style={{
@@ -309,7 +422,7 @@ class Home extends React.Component {
                       title={suggestion["displayName"]}
                       onClick={() => {
                         this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                        this.updatePlaceBySearch(suggestion["displayName"]);
+                        this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
                       }}
                       style={{ cursor: "pointer" }}
                     />
@@ -317,6 +430,18 @@ class Home extends React.Component {
                 })}
             </List>
             <BlockTitle medium>{this.state.place.name}</BlockTitle>
+            <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
+              {Math.round(this.state.routingDistance / 1000)} km,{" "}
+              {
+                // eslint-disable-next-line max-len
+                this.state.routingTime > 3600
+                  ? Math.round(this.state.routingTime / 3600) +
+                    " h " +
+                    Math.round((this.state.routingTime % 3600) / 60) +
+                    " min"
+                  : Math.round(this.state.routingTime / 60) + " min"
+              }
+            </BlockTitle>
             <BlockTitle>{address}</BlockTitle>
             <WikiInfo place={this.state.place} />
             <Button
