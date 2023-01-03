@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle, BlockHeader } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -406,44 +406,52 @@ class Home extends React.Component {
               this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
             }}
           />
-          <List>
-            {this.state.showSearchSuggestions &&
-              this.state.searchSuggestions.map((suggestion, index) => {
-                return (
-                  <ListItem
-                    key={index}
-                    title={suggestion["displayName"]}
-                    onClick={() => {
-                      this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                      this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
-                    }}
-                    style={{ cursor: "pointer" }}
-                  />
-                );
-              })}
-          </List>
-          <BlockTitle medium>{this.state.place.name}</BlockTitle>
-          <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
-            {Math.round(this.state.routingDistance / 1000)} km,{" "}
-            {
-              // eslint-disable-next-line max-len
-              this.state.routingTime > 3600
-                ? Math.round(this.state.routingTime / 3600) +
-                  " h " +
-                  Math.round((this.state.routingTime % 3600) / 60) +
-                  " min"
-                : Math.round(this.state.routingTime / 60) + " min"
-            }
-          </BlockTitle>
-          <BlockTitle>{address}</BlockTitle>
-          <WikiInfo place={this.state.place} />
-          <Button
-            round
-            outline
-            href="/impressum"
-            text="Impressum"
-            style={{ width: "fit-content", marginLeft: "50%" }}
-          ></Button>
+          <div
+            className="sheet-modal-inner"
+            style={{
+              overflow: "hidden scroll",
+              height: `calc(100% - ${SEARCH_BAR_HEIGHT}px)`,
+            }}
+          >
+            <List>
+              {this.state.showSearchSuggestions &&
+                this.state.searchSuggestions.map((suggestion, index) => {
+                  return (
+                    <ListItem
+                      key={index}
+                      title={suggestion["displayName"]}
+                      onClick={() => {
+                        this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
+                        this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                })}
+            </List>
+            <BlockTitle medium>{this.state.place.name}</BlockTitle>
+            <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
+              {Math.round(this.state.routingDistance / 1000)} km,{" "}
+              {
+                // eslint-disable-next-line max-len
+                this.state.routingTime > 3600
+                  ? Math.round(this.state.routingTime / 3600) +
+                    " h " +
+                    Math.round((this.state.routingTime % 3600) / 60) +
+                    " min"
+                  : Math.round(this.state.routingTime / 60) + " min"
+              }
+            </BlockTitle>
+            <BlockHeader>{address}</BlockHeader>
+            <WikiInfo place={this.state.place} />
+            <Button
+              round
+              outline
+              href="/impressum"
+              text="Impressum"
+              style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
+            ></Button>
+          </div>
         </SnappingSheet>
       </Page>
     );

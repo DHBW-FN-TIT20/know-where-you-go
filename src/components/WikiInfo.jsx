@@ -221,7 +221,7 @@ class WikiInfo extends React.Component {
           </Link>
         </BlockTitle>
         <Block>{this.state.description}</Block>
-        <Block>{this.state.image && <img src={this.state.image} />}</Block>
+        <Block>{this.state.image && <img src={this.state.image} style={{ maxWidth: "100%" }} />}</Block>
       </>
     );
   }
