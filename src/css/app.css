@@ -3,6 +3,6 @@
   --f7-block-title-white-space: auto;
 }
 
-.leaflet-control-container .leaflet-routing-container-hide .leaflet-routing-container .leaflet-top .leaflet-right {
+.leaflet-control-container {
   display: none;
 }
