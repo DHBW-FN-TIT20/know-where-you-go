@@ -1,5 +1,6 @@
 import React from "react";
 import { Polygon } from "react-leaflet";
+import MemoFetcher from "../js/memo-fetcher";
 
 class OutlinePolygon extends React.Component {
   constructor(props) {
@@ -7,6 +8,7 @@ class OutlinePolygon extends React.Component {
     this.state = {
       polyLatLngs: [],
     };
+    this.memoFetcher = new MemoFetcher();
   }
 
   async componentDidUpdate(prevProps) {
@@ -16,12 +18,11 @@ class OutlinePolygon extends React.Component {
     // fetch the polygon outline from the OpenStreetMap API (Nominatim)
     // this is not done in the main component because loading the polygon outline
     // takes more time than the normal API call
-    const response = await fetch(
+    const data = await this.memoFetcher.fetch(
       // eslint-disable-next-line max-len
       `https://nominatim.openstreetmap.org/search?q=${this.props.placeName}&format=json&limit=1&polygon_geojson=1&polygon_threshold=0.0005`,
     );
     // check if the response is suited for a polygon outline
-    const data = await response.json();
     if (
       data[0]?.geojson?.coordinates === undefined ||
       data[0]?.geojson?.type === undefined ||
