@@ -137,8 +137,14 @@ class SnappingSheet extends React.Component {
 
     // transition to the new sheet height
     this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: closestSheetHeightState });
+
     this.props.snappedToHeight(closestSheetHeightState);
     this.currentState = this.props.snapHeightStates.indexOf(closestSheetHeightState);
+
+    // scroll the scroll area to the top with a animation if the sheet is not completely open
+    if (this.currentState !== this.props.snapHeightStates.length - 1) {
+      this.scrollAreaRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   /**
