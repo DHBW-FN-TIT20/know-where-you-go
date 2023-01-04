@@ -377,82 +377,76 @@ class Home extends React.Component {
           snapHeightStates={this.sheetHeightStates}
           currentState={this.state.snapSheetToState}
           snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
-        >
-          <Searchbar
-            style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
-            value={this.state.searchText}
-            onFocus={() => {
-              this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
-            }}
-            placeholder="Place, address, or coordinates (lat, lng)"
-            onChange={event => {
-              this.setState({ searchText: event.target.value, showSearchSuggestions: true });
-              this.updateSearchSuggestions(event.target.value);
-            }}
-            onSubmit={event => {
-              event.target.blur(); // hide keyboard TODO: this is not working yet
-              this.updatePlaceBySearchOrOsmID(this.state.searchText);
-            }}
-            onClickClear={() => {
-              this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
-            }}
-            onSearchbarDisable={() => {
-              this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
-            }}
-            onSearchbarClear={() => {
-              this.setState({ searchText: "", showSearchSuggestions: false });
-            }}
-            onClickDisable={() => {
-              this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
-            }}
-          />
-          <div
-            className="sheet-modal-inner"
-            style={{
-              overflow: "hidden scroll",
-              height: `calc(100% - ${SEARCH_BAR_HEIGHT}px)`,
-            }}
-          >
-            <List>
-              {this.state.showSearchSuggestions &&
-                this.state.searchSuggestions.map((suggestion, index) => {
-                  return (
-                    <ListItem
-                      key={index}
-                      title={suggestion["displayName"]}
-                      onClick={() => {
-                        this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
-                        this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    />
-                  );
-                })}
-            </List>
-            <BlockTitle medium>{this.state.place.name}</BlockTitle>
-            <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
-              {Math.round(this.state.routingDistance / 1000)} km,{" "}
-              {
-                // eslint-disable-next-line max-len
-                this.state.routingTime > 3600
+          topBar={
+            <Searchbar
+              style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
+              value={this.state.searchText}
+              onFocus={() => {
+                this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
+              }}
+              placeholder="Place, address, or coordinates (lat, lng)"
+              onChange={event => {
+                this.setState({ searchText: event.target.value, showSearchSuggestions: true });
+                this.updateSearchSuggestions(event.target.value);
+              }}
+              onSubmit={event => {
+                event.target.blur(); // hide keyboard TODO: this is not working yet
+                this.updatePlaceBySearchOrOsmID(this.state.searchText);
+              }}
+              onClickClear={() => {
+                this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
+              }}
+              onSearchbarDisable={() => {
+                this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
+              }}
+              onSearchbarClear={() => {
+                this.setState({ searchText: "", showSearchSuggestions: false });
+              }}
+              onClickDisable={() => {
+                this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
+              }}
+            />
+          }
+          scrollArea={
+            <div>
+              <List>
+                {this.state.showSearchSuggestions &&
+                  this.state.searchSuggestions.map((suggestion, index) => {
+                    return (
+                      <ListItem
+                        key={index}
+                        title={suggestion["displayName"]}
+                        onClick={() => {
+                          this.setState({ searchText: suggestion["displayName"], showSearchSuggestions: false });
+                          this.updatePlaceBySearchOrOsmID(suggestion["displayName"], suggestion["osmID"]);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      />
+                    );
+                  })}
+              </List>
+              <BlockTitle medium>{this.state.place.name}</BlockTitle>
+              <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
+                {Math.round(this.state.routingDistance / 1000)} km,{" "}
+                {this.state.routingTime > 3600
                   ? Math.round(this.state.routingTime / 3600) +
                     " h " +
                     Math.round((this.state.routingTime % 3600) / 60) +
                     " min"
-                  : Math.round(this.state.routingTime / 60) + " min"
-              }
-            </BlockTitle>
-            <BlockHeader>{address}</BlockHeader>
-            <WikiInfo place={this.state.place} />
-            <Button
-              round
-              outline
-              href="/impressum"
-              text="Impressum"
-              style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
-            ></Button>
-          </div>
-        </SnappingSheet>
+                  : Math.round(this.state.routingTime / 60) + " min"}
+              </BlockTitle>
+              <BlockHeader>{address}</BlockHeader>
+              <WikiInfo place={this.state.place} />
+              <Button
+                round
+                outline
+                href="/impressum"
+                text="Impressum"
+                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
+              ></Button>
+            </div>
+          }
+        />
       </Page>
     );
   }
