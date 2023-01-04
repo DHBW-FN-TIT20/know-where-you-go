@@ -1,12 +1,12 @@
 {
   "name": "Know Where You Go",
-  "short_name": "KWYG",
-  "description": "Know-Where-You-Go ist eine Webanwendung, die Ihnen hilft, herauszufinden, wo Sie sind und wohin Sie gehen.",
-  "lang": "de",
+  "short_name": "Know Where You Go",
+  "description": "Know Where You Go",
+  "lang": "en-US",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#222222",
-  "theme_color": "#222222",
+  "background_color": "#EE350F",
+  "theme_color": "#EE350F",
   "icons": [
     {
       "src": "/icons/128x128.png",
@@ -37,22 +37,6 @@
       "src": "/icons/512x512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "/icons/maskable_icon_x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/maskable_icon_x1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "maskable"
     }
-  ],
-  "dir": "ltr",
-  "scope": "https://know-where-you-go.de/",
-  "orientation": "any",
-  "categories": ["navigation"]
+  ]
 }
