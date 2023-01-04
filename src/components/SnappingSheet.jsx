@@ -180,9 +180,8 @@ class SnappingSheet extends React.Component {
     const difference = this.dragStartPositionY - dragStartPositionY;
     const newSheetHeight = this.state.sheetHeight + difference;
 
-    // prevent default if this.currentState !== this.props.snapHeightStates.length - 1
-    // and the this.scrollAreaScrollTop == 0
-    // and the scroll is upwards or there is nothing to scroll
+    // if the user has scrolled to the top, prevent the default scrolling action and move the sheet instead
+    // this is only needed if the user scrolles upwards or if there is nothing scrollable
     if (
       this.currentState == this.props.snapHeightStates.length - 1 &&
       this.scrollAreaScrollTop <= 0 &&
