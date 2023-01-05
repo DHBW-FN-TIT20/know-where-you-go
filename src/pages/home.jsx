@@ -360,6 +360,7 @@ class Home extends React.Component {
           style={{ height: "100%", cursor: "crosshair" }}
           touchZoom={true}
           zoomControl={false}
+          id="map"
         >
           <AccuracyCircle
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
@@ -423,8 +424,8 @@ class Home extends React.Component {
                 this.setState({ searchText: event.target.value, showSearchSuggestions: true });
                 this.updateSearchSuggestions(event.target.value);
               }}
-              onSubmit={event => {
-                event.target.blur(); // hide keyboard TODO: this is not working yet
+              onSubmit={() => {
+                document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
                 this.updatePlaceBySearchOrOsmID(this.state.searchText);
               }}
               onClickClear={() => {
@@ -436,7 +437,7 @@ class Home extends React.Component {
             />
           }
           scrollArea={
-            <div>
+            <div id="scroll-area">
               <List>
                 {this.state.showSearchSuggestions &&
                   this.state.searchSuggestions.map((suggestion, index) => {
