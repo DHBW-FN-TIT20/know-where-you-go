@@ -118,6 +118,7 @@ class Home extends React.Component {
       showSearchSuggestions: false,
       showRouting: true,
     });
+    console.log(this.state);
   };
 
   /**
@@ -437,6 +438,20 @@ class Home extends React.Component {
               </BlockTitle>
               <BlockHeader>{address}</BlockHeader>
               <WikiInfo place={this.state.place} />
+              <Button
+                round
+                outline
+                external
+                target="_blank"
+                href={
+                  "https://www.google.com/maps/search/?api=1&query=" +
+                  this.state.selectedCoords.lat +
+                  "%2C" +
+                  this.state.selectedCoords.lng
+                }
+                text="G-Maps"
+                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
+              ></Button>
               <Button
                 round
                 outline
