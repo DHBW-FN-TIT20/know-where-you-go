@@ -1,5 +1,16 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle, BlockHeader } from "framework7-react";
+import {
+  Page,
+  Searchbar,
+  List,
+  BlockTitle,
+  Button,
+  ListItem,
+  Toggle,
+  BlockHeader,
+  Icon,
+  ListButton,
+} from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -235,6 +246,19 @@ class Home extends React.Component {
   };
 
   /**
+   * Resets the selected coords to the current location
+   * @returns {void}
+   */
+  goBackToCurrentLocation = () => {
+    this.mapNeedsUpdate = true;
+    this.routingNeedsUpdate = true;
+    this.mapCenter = this.state.currentLocation;
+    this.mapZoom = 18;
+    this.setState({ selectedCoords: this.state.currentLocation });
+    this.updatePlaceByCoords(this.state.currentLocation, 18);
+  };
+
+  /**
    * Small Component to interact with the leaflet map
    * @returns {null}
    */
@@ -339,10 +363,6 @@ class Home extends React.Component {
 
     return (
       <Page name="home">
-        <Toggle
-          style={{ position: "absolute", top: "5px", right: "5px", zIndex: 1000 }}
-          onChange={this.toggleTileLayer}
-        />
         <MapContainer
           center={[0, 0]}
           zoom={2}
@@ -372,6 +392,23 @@ class Home extends React.Component {
           <this.MapHook />
           <OutlinePolygon placeName={this.state.place.name} />
         </MapContainer>
+
+        <Button
+          fill
+          className="map-button"
+          onClick={this.toggleTileLayer}
+          style={{ top: window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+        >
+          <Icon f7={this.state.tileLayerStyle === "satellite" ? "map" : "map_fill"} />
+        </Button>
+        <Button
+          fill
+          className="map-button"
+          onClick={this.goBackToCurrentLocation}
+          style={{ top: 50 + window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+        >
+          <Icon f7="location_fill" />
+        </Button>
 
         <SnappingSheet
           snapHeightStates={this.sheetHeightStates}
