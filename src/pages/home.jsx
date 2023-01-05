@@ -1,16 +1,5 @@
 import React from "react";
-import {
-  Page,
-  Searchbar,
-  List,
-  BlockTitle,
-  Button,
-  ListItem,
-  Toggle,
-  BlockHeader,
-  Icon,
-  ListButton,
-} from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -65,6 +54,7 @@ class Home extends React.Component {
     this.memoFetcher = new MemoFetcher();
     this.routingMachine = undefined;
     this.tileLayer = undefined;
+    this.focusOnSearchBar = false; // needed to prevent autoscrolling on focus of searchbar
   }
 
   componentDidMount() {
@@ -418,7 +408,14 @@ class Home extends React.Component {
             <Searchbar
               style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
               value={this.state.searchText}
-              onFocus={() => {
+              onFocus={e => {
+                if (this.focusOnSearchBar) {
+                  this.focusOnSearchBar = false;
+                  return;
+                }
+                e.target.blur();
+                this.focusOnSearchBar = true;
+                e.target.focus({ preventScroll: true });
                 this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
               }}
               placeholder="Place, address, or coordinates (lat, lng)"
@@ -432,12 +429,6 @@ class Home extends React.Component {
               }}
               onClickClear={() => {
                 this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
-              }}
-              onSearchbarDisable={() => {
-                this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
-              }}
-              onSearchbarClear={() => {
-                this.setState({ searchText: "", showSearchSuggestions: false });
               }}
               onClickDisable={() => {
                 this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
