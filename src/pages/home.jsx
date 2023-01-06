@@ -135,14 +135,16 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
-    this.routingNeedsUpdate = true;
+    this.setState({
+      snapSheetToState: 1,
+      selectedCoords: coords,
+    });
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
-      snapSheetToState: 1,
-      selectedCoords: coords,
       showRouting: true,
     });
+    this.routingNeedsUpdate = true;
   };
 
   /**
@@ -236,16 +238,14 @@ class Home extends React.Component {
   };
 
   /**
-   * Resets the selected coords to the current location
+   * Resets the map to the current location
    * @returns {void}
    */
   goBackToCurrentLocation = () => {
     this.mapNeedsUpdate = true;
-    this.routingNeedsUpdate = true;
     this.mapCenter = this.state.currentLocation;
     this.mapZoom = 18;
-    this.setState({ selectedCoords: this.state.currentLocation });
-    this.updatePlaceByCoords(this.state.currentLocation, 18);
+    this.setState({ snapSheetToState: 0 });
   };
 
   /**
@@ -276,7 +276,7 @@ class Home extends React.Component {
 
     // tile layer
     if (this.tileLayerNeedsUpdate) {
-      if (this.tileLayer) map.removeLayer(this.tileLayer);
+      if (this.tileLayer) map?.removeLayer(this.tileLayer);
       this.tileLayer = L.tileLayer(
         this.state.tileLayerStyle === "satellite"
           ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -328,7 +328,7 @@ class Home extends React.Component {
     // if a route is found, check if it is too near to the current location and if so, don't show it
     this.routingMachine.on("routesfound", event => {
       if (event.routes[0] === undefined) return;
-      const minDistance = 400;
+      const minDistance = 100;
       if (event.routes[0].summary.totalDistance < minDistance) this.routingNeedsUpdate = true;
       this.setState({
         routingDistance: event.routes[0].summary.totalDistance,
