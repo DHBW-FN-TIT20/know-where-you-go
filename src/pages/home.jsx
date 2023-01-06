@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, Toggle, BlockHeader } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -54,6 +54,7 @@ class Home extends React.Component {
     this.memoFetcher = new MemoFetcher();
     this.routingMachine = undefined;
     this.tileLayer = undefined;
+    this.focusOnSearchBar = false; // needed to prevent autoscrolling on focus of searchbar
   }
 
   componentDidMount() {
@@ -135,14 +136,16 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
-    this.routingNeedsUpdate = true;
+    this.setState({
+      snapSheetToState: 1,
+      selectedCoords: coords,
+    });
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
-      snapSheetToState: 1,
-      selectedCoords: coords,
       showRouting: true,
     });
+    this.routingNeedsUpdate = true;
   };
 
   /**
@@ -236,6 +239,17 @@ class Home extends React.Component {
   };
 
   /**
+   * Resets the map to the current location
+   * @returns {void}
+   */
+  goBackToCurrentLocation = () => {
+    this.mapNeedsUpdate = true;
+    this.mapCenter = this.state.currentLocation;
+    this.mapZoom = 18;
+    this.setState({ snapSheetToState: 0 });
+  };
+
+  /**
    * Small Component to interact with the leaflet map
    * @returns {null}
    */
@@ -263,7 +277,7 @@ class Home extends React.Component {
 
     // tile layer
     if (this.tileLayerNeedsUpdate) {
-      if (this.tileLayer) map.removeLayer(this.tileLayer);
+      if (this.tileLayer) map?.removeLayer(this.tileLayer);
       this.tileLayer = L.tileLayer(
         this.state.tileLayerStyle === "satellite"
           ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -315,7 +329,7 @@ class Home extends React.Component {
     // if a route is found, check if it is too near to the current location and if so, don't show it
     this.routingMachine.on("routesfound", event => {
       if (event.routes[0] === undefined) return;
-      const minDistance = 400;
+      const minDistance = 100;
       if (event.routes[0].summary.totalDistance < minDistance) this.routingNeedsUpdate = true;
       this.setState({
         routingDistance: event.routes[0].summary.totalDistance,
@@ -340,10 +354,6 @@ class Home extends React.Component {
 
     return (
       <Page name="home">
-        <Toggle
-          style={{ position: "absolute", top: "5px", right: "5px", zIndex: 1000 }}
-          onChange={this.toggleTileLayer}
-        />
         <MapContainer
           center={[0, 0]}
           zoom={2}
@@ -351,6 +361,7 @@ class Home extends React.Component {
           style={{ height: "100%", cursor: "crosshair" }}
           touchZoom={true}
           zoomControl={false}
+          id="map"
         >
           <AccuracyCircle
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
@@ -374,6 +385,23 @@ class Home extends React.Component {
           <OutlinePolygon placeName={this.state.place.name} />
         </MapContainer>
 
+        <Button
+          fill
+          className="map-button"
+          onClick={this.toggleTileLayer}
+          style={{ top: window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+        >
+          <Icon f7={this.state.tileLayerStyle === "satellite" ? "map" : "map_fill"} />
+        </Button>
+        <Button
+          fill
+          className="map-button"
+          onClick={this.goBackToCurrentLocation}
+          style={{ top: 50 + window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+        >
+          <Icon f7="location_fill" />
+        </Button>
+
         <SnappingSheet
           snapHeightStates={this.sheetHeightStates}
           currentState={this.state.snapSheetToState}
@@ -382,7 +410,14 @@ class Home extends React.Component {
             <Searchbar
               style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
               value={this.state.searchText}
-              onFocus={() => {
+              onFocus={e => {
+                if (this.focusOnSearchBar) {
+                  this.focusOnSearchBar = false;
+                  return;
+                }
+                e.target.blur();
+                this.focusOnSearchBar = true;
+                e.target.focus({ preventScroll: true });
                 this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
               }}
               placeholder="Place, address, or coordinates (lat, lng)"
@@ -390,18 +425,12 @@ class Home extends React.Component {
                 this.setState({ searchText: event.target.value, showSearchSuggestions: true });
                 this.updateSearchSuggestions(event.target.value);
               }}
-              onSubmit={event => {
-                event.target.blur(); // hide keyboard TODO: this is not working yet
+              onSubmit={() => {
+                document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
                 this.updatePlaceBySearchOrOsmID(this.state.searchText);
               }}
               onClickClear={() => {
                 this.setState({ searchText: "", showSearchSuggestions: false, searchSuggestions: [] });
-              }}
-              onSearchbarDisable={() => {
-                this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
-              }}
-              onSearchbarClear={() => {
-                this.setState({ searchText: "", showSearchSuggestions: false });
               }}
               onClickDisable={() => {
                 this.setState({ snapSheetToState: 0, showSearchSuggestions: false });
@@ -409,7 +438,7 @@ class Home extends React.Component {
             />
           }
           scrollArea={
-            <div>
+            <div id="scroll-area">
               <List>
                 {this.state.showSearchSuggestions &&
                   this.state.searchSuggestions.map((suggestion, index) => {

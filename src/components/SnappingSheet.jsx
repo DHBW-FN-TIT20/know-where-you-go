@@ -79,6 +79,7 @@ class SnappingSheet extends React.Component {
         sheetHeightTransitionStyle: "0.3s ease-in-out",
         sheetHeight: this.props.snapHeightStates[this.props.currentState],
       });
+      this.currentState = this.props.currentState;
       this.props.snappedToHeight(this.props.snapHeightStates[this.props.currentState]);
     }
   }
@@ -154,6 +155,7 @@ class SnappingSheet extends React.Component {
   dragOnScrollAreaStart = event => {
     // check if the scroll area is scrolled to the top only then start the dragging process
     if (this.currentState == this.props.snapHeightStates.length - 1 && this.scrollAreaScrollTop > 0) {
+      console.log("scrolling");
       return;
     }
 
