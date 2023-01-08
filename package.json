@@ -30,6 +30,7 @@
     "framework7-icons": "^5.0.5",
     "framework7-react": "^7.0.9",
     "leaflet": "^1.9.3",
+    "leaflet-routing-machine": "^3.2.12",
     "material-icons": "^1.13.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

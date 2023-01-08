@@ -1,1 +1,31 @@
 /* Your app custom styles here */
+:root {
+  --f7-block-title-white-space: auto;
+}
+
+.leaflet-control-container {
+  display: none;
+}
+
+.grey-blur {
+  background-color: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.light-blue-blur {
+  background-color: rgba(0, 0, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.map-button {
+  background-color: rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  height: 45px;
+  width: 45px;
+  right: 5px;
+  position: absolute;
+}
