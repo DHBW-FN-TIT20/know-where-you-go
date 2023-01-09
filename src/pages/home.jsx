@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React from "react";
 import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
@@ -35,12 +36,12 @@ class Home extends React.Component {
       routingTime: 0,
       showRoutingDistanceAndDuration: false,
       tileLayerStyle: "map",
+      sheetHeightStates: [
+        SEARCH_BAR_HEIGHT,
+        window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
+        window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
+      ],
     };
-    this.sheetHeightStates = [
-      SEARCH_BAR_HEIGHT,
-      window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
-      window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
-    ];
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
     this.mapSlowAnimation = true;
@@ -85,6 +86,18 @@ class Home extends React.Component {
         });
       });
     }, 5000);
+
+    // eventlistener on resize to update the sheetHeightStates
+    window.addEventListener("resize", () => {
+      this.setState({
+        mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
+        sheetHeightStates: [
+          SEARCH_BAR_HEIGHT,
+          window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
+          window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
+        ],
+      });
+    });
   }
 
   /**
@@ -388,7 +401,9 @@ class Home extends React.Component {
           fill
           className="map-button"
           onClick={this.toggleTileLayer}
-          style={{ top: window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+          style={{
+            top: window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
+          }}
         >
           <Icon f7={this.state.tileLayerStyle === "satellite" ? "map" : "map_fill"} />
         </Button>
@@ -396,13 +411,15 @@ class Home extends React.Component {
           fill
           className="map-button"
           onClick={this.goBackToCurrentLocation}
-          style={{ top: 50 + window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
+          style={{
+            top: 50 + window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
+          }}
         >
           <Icon f7="location_fill" />
         </Button>
 
         <SnappingSheet
-          snapHeightStates={this.sheetHeightStates}
+          snapHeightStates={this.state.sheetHeightStates}
           currentState={this.state.snapSheetToState}
           snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
           topBar={
