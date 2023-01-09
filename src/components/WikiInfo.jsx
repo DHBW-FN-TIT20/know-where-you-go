@@ -144,7 +144,6 @@ class WikiInfo extends React.Component {
     if (data.query.pages === undefined || data.query.pages.length === 0) {
       return false;
     }
-    console.log(data.query.pages);
     this.updateInfoByWikiPage(data.query.pages[0]);
     return true;
   };
