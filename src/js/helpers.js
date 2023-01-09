@@ -6,6 +6,20 @@
  */
 export const getPlaceByNominatimData = (placeData, userInputCoords) => {
   if (placeData === undefined) return;
+
+  const convertLongOsmTypeTo1Letter = osmType => {
+    switch (osmType) {
+      case "node":
+        return "N";
+      case "way":
+        return "W";
+      case "relation":
+        return "R";
+      default:
+        return "";
+    }
+  };
+
   let place = {
     name: placeData?.display_name || "Unknown location",
     address: {
@@ -24,7 +38,10 @@ export const getPlaceByNominatimData = (placeData, userInputCoords) => {
     },
     type: placeData?.type || "",
     importance: placeData?.importance ? parseFloat(placeData?.lat) : 0,
-    osmId: placeData?.osm_id || 0,
+    osmId:
+      placeData?.osm_type && placeData?.osm_id
+        ? `${convertLongOsmTypeTo1Letter(placeData?.osm_type)}${placeData?.osm_id}`
+        : "",
     realCoords: {
       lat: placeData?.lat ? parseFloat(placeData?.lat) : undefined,
       lng: placeData?.lon ? parseFloat(placeData?.lon) : undefined,
@@ -99,7 +116,8 @@ export const saveObjectToLocalStorage = (key, object) => {
  */
 export const getObjectFromLocalStorage = key => {
   if (key === undefined || key === null || key === "") return;
-  const object = JSON.parse(localStorage.getItem(key) || "undefined");
+  if (localStorage.getItem(key) === null) return undefined;
+  const object = JSON.parse(localStorage.getItem(key) || "{}");
   return object;
 };
 

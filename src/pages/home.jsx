@@ -7,7 +7,12 @@ import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
 import OutlinePolygon from "../components/OutlinePolygon";
-import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
+import {
+  getPlaceByNominatimData,
+  getCoordsFromSearchText,
+  saveObjectToLocalStorage,
+  getObjectFromLocalStorage,
+} from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
 import L from "leaflet";
@@ -30,6 +35,7 @@ class Home extends React.Component {
       mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
       selectedCoords: { lat: undefined, lng: undefined },
       searchSuggestions: [],
+      lastVisitedPlaces: getObjectFromLocalStorage("lastVisitedPlaces") || [],
       showSearchSuggestions: false,
       showRouting: true,
       routingDistance: 0,
@@ -132,6 +138,7 @@ class Home extends React.Component {
       showSearchSuggestions: false,
       showRouting: true,
     });
+    this.addPlaceToLastVisited(place);
   };
 
   /**
@@ -218,7 +225,11 @@ class Home extends React.Component {
    */
   updateSearchSuggestions = async searchText => {
     if (searchText.trim().length < 3) {
-      this.setState({ searchSuggestions: [] });
+      this.setState({
+        searchSuggestions: this.state.lastVisitedPlaces.map(place => {
+          return { displayName: place.name, osmID: place.osmId };
+        }),
+      });
       return;
     }
     clearTimeout(this.suggestionTimeout);
@@ -237,7 +248,7 @@ class Home extends React.Component {
         };
         return placeData;
       });
-      this.setState({ searchSuggestions });
+      if (this.state.searchText === searchText) this.setState({ searchSuggestions });
     }, 200);
   };
 
@@ -259,6 +270,25 @@ class Home extends React.Component {
     this.mapCenter = this.state.currentLocation;
     this.mapZoom = 18;
     this.setState({ snapSheetToState: 0 });
+  };
+
+  /**
+   * Adds a place to the last visited places (so that the this.state.lastVisitedPlaces array is not longer than 5)
+   * @param {Object} place
+   * @returns {void}
+   */
+  addPlaceToLastVisited = place => {
+    const lastVisitedPlaces = this.state.lastVisitedPlaces;
+
+    // remove the place if it is already in the array
+    const index = lastVisitedPlaces.findIndex(p => p.osmId === place.osmId);
+    if (index !== -1) lastVisitedPlaces.splice(index, 1);
+
+    // add the place to the beginning of the array and remove the last element if the array is longer than 5
+    lastVisitedPlaces.unshift(place);
+    if (lastVisitedPlaces.length > 5) lastVisitedPlaces.pop();
+    saveObjectToLocalStorage("lastVisitedPlaces", lastVisitedPlaces);
+    this.setState({ lastVisitedPlaces });
   };
 
   /**
@@ -434,7 +464,9 @@ class Home extends React.Component {
                 e.target.blur();
                 this.focusOnSearchBar = true;
                 e.target.focus({ preventScroll: true });
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
                 this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
+                this.updateSearchSuggestions(e.target.value);
               }}
               placeholder="Place, address, or coordinates (lat, lng)"
               onChange={event => {
