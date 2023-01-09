@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.know-where-you-go.de/sitemap.xml
+Sitemap: https://dhbw-fn-tit20.github.io/know-where-you-go/sitemap.xml
