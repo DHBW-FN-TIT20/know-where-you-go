@@ -119,7 +119,6 @@ class Home extends React.Component {
       showSearchSuggestions: false,
       showRouting: true,
     });
-    console.log(this.state);
   };
 
   /**

@@ -155,7 +155,6 @@ class SnappingSheet extends React.Component {
   dragOnScrollAreaStart = event => {
     // check if the scroll area is scrolled to the top only then start the dragging process
     if (this.currentState == this.props.snapHeightStates.length - 1 && this.scrollAreaScrollTop > 0) {
-      console.log("scrolling");
       return;
     }
 
