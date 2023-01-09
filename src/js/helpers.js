@@ -6,6 +6,20 @@
  */
 export const getPlaceByNominatimData = (placeData, userInputCoords) => {
   if (placeData === undefined) return;
+
+  const convertLongOsmTypeTo1Letter = osmType => {
+    switch (osmType) {
+      case "node":
+        return "N";
+      case "way":
+        return "W";
+      case "relation":
+        return "R";
+      default:
+        return "";
+    }
+  };
+
   let place = {
     name: placeData?.display_name || "Unknown location",
     address: {
@@ -24,7 +38,10 @@ export const getPlaceByNominatimData = (placeData, userInputCoords) => {
     },
     type: placeData?.type || "",
     importance: placeData?.importance ? parseFloat(placeData?.lat) : 0,
-    osmId: placeData?.osm_id || 0,
+    osmId:
+      placeData?.osm_type && placeData?.osm_id
+        ? `${convertLongOsmTypeTo1Letter(placeData?.osm_type)}${placeData?.osm_id}`
+        : "",
     realCoords: {
       lat: placeData?.lat ? parseFloat(placeData?.lat) : undefined,
       lng: placeData?.lon ? parseFloat(placeData?.lon) : undefined,
@@ -78,4 +95,57 @@ export const getCoordsFromSearchText = text => {
   const lat = parseFloat(match[1]);
   const lng = parseFloat(match[3]);
   return { lat: lat, lng: lng };
+};
+
+/**
+ * Saves a object to local storage
+ * @param {string} key
+ * @param {Object} object
+ * @returns void
+ */
+export const saveObjectToLocalStorage = (key, object) => {
+  if (key === undefined || key === null || key === "") return;
+  if (object === undefined || object === null) return;
+  localStorage.setItem(key, JSON.stringify(object));
+};
+
+/**
+ * Gets a object from local storage
+ * @param {string} key
+ * @returns {Object | undefined}
+ */
+export const getObjectFromLocalStorage = key => {
+  if (key === undefined || key === null || key === "") return;
+  if (localStorage.getItem(key) === null) return undefined;
+  const object = JSON.parse(localStorage.getItem(key) || "{}");
+  return object;
+};
+
+/**
+ * Checks if a object exists in local storage
+ * @param {string} key
+ * @returns {boolean}
+ */
+export const objectExistsInLocalStorage = key => {
+  if (key === undefined || key === null || key === "") return false;
+  const object = getObjectFromLocalStorage(key);
+  return object !== null;
+};
+
+/**
+ * Removes a object from local storage
+ * @param {string} key
+ * @returns void
+ */
+export const removeObjectFromLocalStorage = key => {
+  if (key === undefined || key === null || key === "") return;
+  localStorage.removeItem(key);
+};
+
+/**
+ * Removes all objects from local storage
+ * @returns void
+ */
+export const removeAllObjectsFromLocalStorage = () => {
+  localStorage.clear();
 };
