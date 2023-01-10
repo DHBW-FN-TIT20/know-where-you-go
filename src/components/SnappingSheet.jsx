@@ -218,10 +218,7 @@ class SnappingSheet extends React.Component {
   render() {
     return (
       <div
-        ref={this.dragAreaRef}
         style={{
-          height: this.state.sheetHeight,
-          transition: this.state.sheetHeightTransitionStyle,
           position: "fixed",
           bottom: 0,
           left: 0,
@@ -229,19 +226,28 @@ class SnappingSheet extends React.Component {
           zIndex: 1000,
         }}
       >
-        <div ref={this.topBarRef}>{this.props.topBar}</div>
+        <div>{this.props.outBar}</div>
         <div
-          ref={this.scrollAreaRef}
+          ref={this.dragAreaRef}
           style={{
-            height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
-            overflow: "scroll",
-          }}
-          className="grey-blur"
-          onScroll={e => {
-            this.scrollAreaScrollTop = e.target.scrollTop;
+            height: this.state.sheetHeight,
+            transition: this.state.sheetHeightTransitionStyle,
           }}
         >
-          {this.props.scrollArea}
+          <div ref={this.topBarRef}>{this.props.topBar}</div>
+          <div
+            ref={this.scrollAreaRef}
+            style={{
+              height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
+              overflow: "scroll",
+            }}
+            className="grey-blur"
+            onScroll={e => {
+              this.scrollAreaScrollTop = e.target.scrollTop;
+            }}
+          >
+            {this.props.scrollArea}
+          </div>
         </div>
       </div>
     );
@@ -250,6 +256,7 @@ class SnappingSheet extends React.Component {
 
 // define the types of the properties that are passed to the component
 SnappingSheet.prototype.props = /** @type { { 
+  outBar: React.ReactNode,
   topBar: React.ReactNode,
   scrollArea: React.ReactNode,
   snapHeightStates: number[],

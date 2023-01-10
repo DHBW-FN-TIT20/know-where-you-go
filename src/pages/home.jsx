@@ -17,6 +17,7 @@ import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
 import L from "leaflet";
 import "leaflet-routing-machine";
+import MapCredits from "../components/MapCredits";
 
 const SEARCH_BAR_HEIGHT = 70;
 
@@ -452,6 +453,7 @@ class Home extends React.Component {
           snapHeightStates={this.state.sheetHeightStates}
           currentState={this.state.snapSheetToState}
           snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
+          outBar={<MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />}
           topBar={
             <Searchbar
               style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
