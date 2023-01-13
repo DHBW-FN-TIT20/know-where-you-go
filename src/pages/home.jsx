@@ -357,7 +357,7 @@ class Home extends React.Component {
       fitSelectedRoutes: false,
       draggableWaypoints: false,
       lineOptions: {
-        styles: [{ color: "blue", opacity: 1, weight: 2 }],
+        styles: [{ color: "#235cb2", opacity: 0.8, weight: 4 }],
         extendToWaypoints: true,
         missingRouteTolerance: 0,
       },
