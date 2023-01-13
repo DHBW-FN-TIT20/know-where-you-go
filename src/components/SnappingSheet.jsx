@@ -236,7 +236,7 @@ class SnappingSheet extends React.Component {
             height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
             overflow: "scroll",
           }}
-          className="grey-blur"
+          className="primary-background"
           onScroll={e => {
             this.scrollAreaScrollTop = e.target.scrollTop;
           }}
