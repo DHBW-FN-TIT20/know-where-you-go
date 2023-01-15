@@ -13,11 +13,19 @@
 :root {
   --primary-background-color: #222222;
   --f7-block-title-white-space: auto;
-  --f7-searchbar-in-page-content-border-radius: 1rem 1rem 0 0;
-  --f7-searchbar-in-page-content-input-border-radius: 1rem;
-  --f7-searchbar-bg-color: var(--primary-background-color) !important;
+  --f7-searchbar-in-page-content-border-radius: 1.4rem 1.4rem 0 0;
+  --f7-searchbar-in-page-content-input-border-radius: 0.9rem;
   --f7-searchbar-in-page-content-box-shadow: none;
   --f7-font-family: "Jost", sans-serif;
+  --f7-searchbar-input-bg-color: var(--primary-background-color);
+  --f7-searchbar-bg-color: var(--primary-background-color);
+  --f7-searchbar-input-padding-horizontal: 24px;
+  --f7-searchbar-input-font-size: 16px;
+}
+
+:root .dark {
+  --f7-searchbar-input-bg-color: var(--primary-background-color);
+  --f7-searchbar-bg-color: var(--primary-background-color);
 }
 
 /* Classes */
@@ -38,14 +46,48 @@
   position: absolute;
 }
 
+/* Framework7 Class Adjustments */
+
 .searchbar .searchbar-input-wrap {
   height: 50%;
   width: 90%;
   margin: 1rem auto;
-  border-radius: 1rem;
-  border: 1px solid white;
+  border-radius: 0.8rem;
+  border: 1px solid var(--f7-searchbar-placeholder-color);
+}
+.searchbar-focused .searchbar-input-wrap {
+  border-color: var(--f7-searchbar-input-text-color);
 }
 
 .searchbar-input-wrap > input:nth-child(1) {
   border-radius: 1rem;
+}
+
+.list {
+  margin-top: 0;
+}
+
+.block-title-medium {
+  margin-top: 0;
+}
+
+.md .searchbar-icon:after {
+  font-size: 17px;
+  margin-top: 2px;
+}
+
+.md .searchbar-disable-button::after {
+  margin-left: 16px;
+  font-size: 17px;
+}
+
+.ios {
+  --f7-searchbar-input-extra-padding-left: 8px;
+}
+
+/*disable ios transparent searchbar*/
+
+.ios-translucent-bars .searchbar {
+  background-color: var(--primary-background-color);
+  backdrop-filter: none;
 }

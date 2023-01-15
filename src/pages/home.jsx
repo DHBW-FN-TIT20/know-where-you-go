@@ -463,15 +463,23 @@ class Home extends React.Component {
                 }
                 e.target.blur();
                 this.focusOnSearchBar = true;
-                e.target.focus({ preventScroll: true });
+                //e.target.focus({ preventScroll: true });
                 e.target.setSelectionRange(e.target.value.length, e.target.value.length);
-                this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
+                this.setState({ snapSheetToState: 2 });
                 this.updateSearchSuggestions(e.target.value);
+                //ensure list is hidden when less than 3 characters are present
+                if (e.target.value.length < 3) {
+                  this.setState({ showSearchSuggestions: false });
+                }
               }}
               placeholder="Place, address, or coordinates (lat, lng)"
-              onChange={event => {
-                this.setState({ searchText: event.target.value, showSearchSuggestions: true });
-                this.updateSearchSuggestions(event.target.value);
+              onChange={e => {
+                this.setState({ searchText: e.target.value, showSearchSuggestions: true });
+                this.updateSearchSuggestions(e.target.value);
+                //ensure list is hidden when less than 3 characters are present
+                if (e.target.value.length < 3) {
+                  this.setState({ showSearchSuggestions: false });
+                }
               }}
               onSubmit={() => {
                 document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
@@ -487,7 +495,7 @@ class Home extends React.Component {
           }
           scrollArea={
             <div id="scroll-area">
-              <List>
+              <List style={{ display: this.state.showSearchSuggestions ? "block" : "none" }}>
                 {this.state.showSearchSuggestions &&
                   this.state.searchSuggestions.map((suggestion, index) => {
                     return (
