@@ -46,6 +46,21 @@
   position: absolute;
 }
 
+.map-credits {
+  display: flex;
+  flex-direction: row;
+  right: 5;
+  color: black;
+  padding-left: 9px;
+  padding-right: 9px;
+  border-radius: 5px;
+  font-size: 10px;
+}
+
+.map-credits a {
+  color: black;
+}
+
 /* Framework7 Class Adjustments */
 
 .searchbar .searchbar-input-wrap {
