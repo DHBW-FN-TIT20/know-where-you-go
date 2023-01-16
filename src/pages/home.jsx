@@ -326,6 +326,7 @@ class Home extends React.Component {
           : "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
         {
           attribution: this.state.tileLayerStyle === "satellite" ? "Tiles &copy; Esri" : "Tiles &copy; OpenStreetMap",
+          noWrap: true,
         },
       ).addTo(map);
       this.tileLayerNeedsUpdate = false;
@@ -404,6 +405,12 @@ class Home extends React.Component {
           touchZoom={true}
           zoomControl={false}
           id="map"
+          maxBoundsViscosity={1.0}
+          maxBounds={[
+            [90, 180],
+            [-90, -180],
+          ]}
+          minZoom={2}
         >
           <AccuracyCircle
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
