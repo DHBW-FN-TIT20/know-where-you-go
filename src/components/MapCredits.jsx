@@ -8,7 +8,7 @@ class MapCredits extends React.Component {
         <Link href={"https://leafletjs.com/"} external target="_blank">
           Leaflet
         </Link>
-        <div>{" | "}</div>
+        <div>&nbsp;{"|"}&nbsp;</div>
         <div>Tiles © {this.props.tileProvider}</div>
       </div>
     );

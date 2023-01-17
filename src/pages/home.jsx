@@ -270,7 +270,7 @@ class Home extends React.Component {
     this.mapNeedsUpdate = true;
     this.mapCenter = this.state.currentLocation;
     this.mapZoom = 18;
-    this.setState({ snapSheetToState: 0 });
+    this.setState({ snapSheetToState: 0, currentLocationActive: true });
   };
 
   /**
@@ -428,32 +428,43 @@ class Home extends React.Component {
           <OutlinePolygon placeName={this.state.place.name} />
         </MapContainer>
 
-        <Button
-          fill
-          className="map-button"
-          onClick={this.toggleTileLayer}
-          style={{
-            top: window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
-          }}
-        >
-          <Icon f7={this.state.tileLayerStyle === "satellite" ? "map" : "map_fill"} />
-        </Button>
-        <Button
-          fill
-          className="map-button"
-          onClick={this.goBackToCurrentLocation}
-          style={{
-            top: 50 + window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
-          }}
-        >
-          <Icon f7="location_fill" />
-        </Button>
-
         <SnappingSheet
           snapHeightStates={this.state.sheetHeightStates}
           currentState={this.state.snapSheetToState}
           snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
-          outBar={<MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />}
+          outBar={
+            <div className="out-bar">
+              <MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />
+              <div className="map-button-wrapper">
+                <Button
+                  fill
+                  className="map-button"
+                  onClick={this.toggleTileLayer}
+                  // style={{
+                  //   top: window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
+                  // }}
+                >
+                  <span
+                    className={this.state.tileLayerStyle === "satellite" ? "bi bi-map-fill" : "bi bi-map"}
+                    style={{ fontSize: "24px", width: "24px" }}
+                  />
+                </Button>
+                <Button
+                  fill
+                  className="map-button"
+                  onClick={this.goBackToCurrentLocation}
+                  // style={{
+                  //   top: 50 + window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
+                  // }}
+                >
+                  <span
+                    className={this.state.currentLocationActive === true ? "bi bi-cursor-fill" : "bi bi-cursor"}
+                    style={{ fontSize: "24px", width: "24px" }}
+                  />
+                </Button>
+              </div>
+            </div>
+          }
           topBar={
             <Searchbar
               style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
