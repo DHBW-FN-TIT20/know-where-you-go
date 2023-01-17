@@ -270,7 +270,7 @@ class Home extends React.Component {
    */
   goBackToCurrentLocation = () => {
     //check if we are already at our current location
-    if(this.currentLocationActive) {
+    if (this.currentLocationActive) {
       return;
     }
     this.mapNeedsUpdate = true;
@@ -329,7 +329,7 @@ class Home extends React.Component {
           this.currentLocationButton.classList.remove("bi-cursor-fill");
           this.currentLocationButton.classList.add("bi-cursor");
           this.currentLocationActive = false;
-        };
+        }
       },
       zoom: () => {
         this.mapZoom = map.getZoom();
@@ -457,21 +457,13 @@ class Home extends React.Component {
             <div className="out-bar">
               <MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />
               <div className="map-button-wrapper">
-                <Button
-                  fill
-                  className="map-button"
-                  onClick={this.toggleTileLayer}
-                >
+                <Button fill className="map-button" onClick={this.toggleTileLayer}>
                   <span
                     className={this.state.tileLayerStyle === "satellite" ? "bi bi-map-fill" : "bi bi-map"}
                     style={{ fontSize: "24px", width: "24px" }}
                   />
                 </Button>
-                <Button
-                  fill
-                  className="map-button"
-                  onClick={this.goBackToCurrentLocation}
-                  >
+                <Button fill className="map-button" onClick={this.goBackToCurrentLocation}>
                   <span
                     className="bi bi-cursor-fill"
                     id="currentLocationButton"
@@ -494,7 +486,7 @@ class Home extends React.Component {
                 this.focusOnSearchBar = true;
                 this.setState({ snapSheetToState: 2 });
                 this.updateSearchSuggestions(e.target.value);
-                setTimeout(function() { e.target.focus(); }, 1);
+                setTimeout(() => { e.target.focus(); }, 1);
                 //ensure list is hidden when less than 3 characters are present
                 if (e.target.value.length < 3) {
                   this.setState({ showSearchSuggestions: false });
@@ -548,7 +540,6 @@ class Home extends React.Component {
                     Math.round((this.state.routingTime % 3600) / 60) +
                     " min"
                   : Math.round(this.state.routingTime / 60) + " min"}
-
                 <Link
                   iconF7="location"
                   iconSize={14}
@@ -557,7 +548,7 @@ class Home extends React.Component {
                   target="_blank"
                   text="G-Maps"
                   href={
-                    "https://www.google.com/maps/dir/?api=1&origin="+
+                    "https://www.google.com/maps/dir/?api=1&origin=" +
                     this.state.currentLocation.lat +
                     "%2C" +
                     this.state.currentLocation.lng +
@@ -568,7 +559,7 @@ class Home extends React.Component {
                   }
                 ></Link>
               </BlockTitle>
-              
+
               <BlockHeader>{address}</BlockHeader>
               <WikiInfo place={this.state.place} />
               <Button
