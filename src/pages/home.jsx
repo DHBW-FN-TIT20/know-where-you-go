@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Link } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -49,6 +49,8 @@ class Home extends React.Component {
         window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
       ],
     };
+    this.currentLocationActive = true;
+    this.dontUpdateButton = true;
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
     this.mapSlowAnimation = true;
@@ -267,10 +269,19 @@ class Home extends React.Component {
    * @returns {void}
    */
   goBackToCurrentLocation = () => {
+    //check if we are already at our current location
+    if(this.currentLocationActive) {
+      return;
+    }
     this.mapNeedsUpdate = true;
     this.mapCenter = this.state.currentLocation;
     this.mapZoom = 18;
-    this.setState({ snapSheetToState: 0, currentLocationActive: true });
+    this.setState({ snapSheetToState: 0 });
+    this.currentLocationButton = document.getElementById("currentLocationButton");
+    this.currentLocationButton.classList.remove("bi-cursor");
+    this.currentLocationButton.classList.add("bi-cursor-fill");
+    this.currentLocationActive = true;
+    this.dontUpdateButton = true;
   };
 
   /**
@@ -309,6 +320,16 @@ class Home extends React.Component {
     useMapEvents({
       click: event => {
         this.updatePlaceByCoords(event.latlng, this.mapZoom);
+      },
+      movestart: () => {
+        if (this.dontUpdateButton) {
+          this.dontUpdateButton = false;
+        } else {
+          this.currentLocationButton = document.getElementById("currentLocationButton");
+          this.currentLocationButton.classList.remove("bi-cursor-fill");
+          this.currentLocationButton.classList.add("bi-cursor");
+          this.currentLocationActive = false;
+        };
       },
       zoom: () => {
         this.mapZoom = map.getZoom();
@@ -440,9 +461,6 @@ class Home extends React.Component {
                   fill
                   className="map-button"
                   onClick={this.toggleTileLayer}
-                  // style={{
-                  //   top: window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
-                  // }}
                 >
                   <span
                     className={this.state.tileLayerStyle === "satellite" ? "bi bi-map-fill" : "bi bi-map"}
@@ -453,12 +471,10 @@ class Home extends React.Component {
                   fill
                   className="map-button"
                   onClick={this.goBackToCurrentLocation}
-                  // style={{
-                  //   top: 50 + window.innerHeight - this.state.sheetHeightStates[this.state.sheetHeightStates.length - 1] + "px",
-                  // }}
-                >
+                  >
                   <span
-                    className={this.state.currentLocationActive === true ? "bi bi-cursor-fill" : "bi bi-cursor"}
+                    className="bi bi-cursor-fill"
+                    id="currentLocationButton"
                     style={{ fontSize: "24px", width: "24px" }}
                   />
                 </Button>
@@ -532,24 +548,27 @@ class Home extends React.Component {
                     Math.round((this.state.routingTime % 3600) / 60) +
                     " min"
                   : Math.round(this.state.routingTime / 60) + " min"}
+
+                <Link
+                  iconF7="location"
+                  iconSize={14}
+                  style={{ margin: "0 0.8rem" }}
+                  external
+                  target="_blank"
+                  text="G-Maps"
+                  href={
+                    "https://www.google.com/maps/dir/?api=1&origin="+
+                    this.state.currentLocation.lat +
+                    "%2C" +
+                    this.state.currentLocation.lng +
+                    "&destination=" +
+                    this.state.selectedCoords.lat +
+                    "%2C" +
+                    this.state.selectedCoords.lng
+                  }
+                ></Link>
               </BlockTitle>
-              <Link
-                iconF7="location"
-                iconSize={12}
-                external
-                target="_blank"
-                text="G-Maps"
-                href={
-                  "https://www.google.com/maps/dir/?api=1&origin="+
-                  this.state.currentLocation.lat +
-                  "%2C" +
-                  this.state.currentLocation.lng +
-                  "&destination=" +
-                  this.state.selectedCoords.lat +
-                  "%2C" +
-                  this.state.selectedCoords.lng
-                }
-              ></Link>
+              
               <BlockHeader>{address}</BlockHeader>
               <WikiInfo place={this.state.place} />
               <Button
