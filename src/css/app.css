@@ -21,6 +21,7 @@
   --f7-searchbar-bg-color: var(--primary-background-color);
   --f7-searchbar-input-padding-horizontal: 24px;
   --f7-searchbar-input-font-size: 16px;
+  --f7-searchbar-border-color: transparent;
 }
 
 :root .dark {
