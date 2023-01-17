@@ -533,22 +533,25 @@ class Home extends React.Component {
                     " min"
                   : Math.round(this.state.routingTime / 60) + " min"}
               </BlockTitle>
-              <BlockHeader>{address}</BlockHeader>
-              <WikiInfo place={this.state.place} />
-              <Button
-                round
-                outline
+              <Link
+                iconF7="location"
+                iconSize={12}
                 external
                 target="_blank"
+                text="G-Maps"
                 href={
-                  "https://www.google.com/maps/search/?api=1&query=" +
+                  "https://www.google.com/maps/dir/?api=1&origin="+
+                  this.state.currentLocation.lat +
+                  "%2C" +
+                  this.state.currentLocation.lng +
+                  "&destination=" +
                   this.state.selectedCoords.lat +
                   "%2C" +
                   this.state.selectedCoords.lng
                 }
-                text="G-Maps"
-                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
-              ></Button>
+              ></Link>
+              <BlockHeader>{address}</BlockHeader>
+              <WikiInfo place={this.state.place} />
               <Button
                 round
                 outline
