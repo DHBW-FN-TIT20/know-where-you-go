@@ -8,6 +8,11 @@
   font-style: italic;
   src: url("/Jost/Jost-Italic-VariableFont_wght.ttf");
 }
+@font-face {
+  font-family: "Jost";
+  font-weight: 200;
+  src: url("/Jost/static/Jost-ExtraLight.ttf");
+}
 
 /* Tags */
 :root {
@@ -89,14 +94,6 @@
   border-radius: 1rem;
 }
 
-.list {
-  margin-top: 0;
-}
-
-.block-title-medium {
-  margin-top: 0;
-}
-
 .md .searchbar-icon:after {
   font-size: 17px;
   margin-top: 2px;
@@ -119,4 +116,24 @@
 .ios-translucent-bars .searchbar {
   background-color: transparent;
   backdrop-filter: none;
+}
+
+/* helper classes */
+.font-light {
+  font-weight: 200;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.fs-2 {
+  font-size: 1.2rem;
+  line-height: 1.8rem;
 }

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Link } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon, Link } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -304,6 +304,22 @@ class Home extends React.Component {
   };
 
   /**
+   * Finds a fitting location name
+   * @returns {string}
+   */
+  findHumanPlaceName = rawName => {
+    if (rawName === undefined) {
+      return "";
+    }
+
+    let name = rawName.split(",")[0];
+    if (!isNaN(parseInt(name))) {
+      name = rawName.split(",")[1] + " " + name;
+    }
+    return name;
+  }
+
+  /**
    * Small Component to interact with the leaflet map
    * @returns {null}
    */
@@ -486,7 +502,9 @@ class Home extends React.Component {
                 this.focusOnSearchBar = true;
                 this.setState({ snapSheetToState: 2 });
                 this.updateSearchSuggestions(e.target.value);
-                setTimeout(() => { e.target.focus(); }, 1);
+                setTimeout(() => {
+                  e.target.focus();
+                }, 1);
                 //ensure list is hidden when less than 3 characters are present
                 if (e.target.value.length < 3) {
                   this.setState({ showSearchSuggestions: false });
@@ -515,7 +533,7 @@ class Home extends React.Component {
           }
           scrollArea={
             <div id="scroll-area">
-              <List style={{ display: this.state.showSearchSuggestions ? "block" : "none" }}>
+              <List className="mt-0" style={{ display: this.state.showSearchSuggestions ? "block" : "none" }}>
                 {this.state.showSearchSuggestions &&
                   this.state.searchSuggestions.map((suggestion, index) => {
                     return (
@@ -531,9 +549,10 @@ class Home extends React.Component {
                     );
                   })}
               </List>
-              <BlockTitle medium>{this.state.place.name}</BlockTitle>
-              <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
-                {Math.round(this.state.routingDistance / 1000)} km,{" "}
+              <BlockTitle large className="mt-0 mb-1">{this.findHumanPlaceName(this.state.place.name)}</BlockTitle>
+              <BlockHeader>{address}</BlockHeader>
+              <BlockTitle medium style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none", marginTop: "1rem" }}>
+                Route:  {Math.round(this.state.routingDistance / 1000)} km,{" "}
                 {this.state.routingTime > 3600
                   ? Math.round(this.state.routingTime / 3600) +
                     " h " +
@@ -541,12 +560,9 @@ class Home extends React.Component {
                     " min"
                   : Math.round(this.state.routingTime / 60) + " min"}
                 <Link
-                  iconF7="location"
-                  iconSize={14}
-                  style={{ margin: "0 0.8rem" }}
+                  style={{ margin: "0 0.8rem", display: "unset" }}
                   external
                   target="_blank"
-                  text="G-Maps"
                   href={
                     "https://www.google.com/maps/dir/?api=1&origin=" +
                     this.state.currentLocation.lat +
@@ -557,10 +573,11 @@ class Home extends React.Component {
                     "%2C" +
                     this.state.selectedCoords.lng
                   }
-                ></Link>
+                >
+                  <Icon f7="location" size={18} style={{ verticalAlign: "unset", marginRight: "0.25rem" }} />G-Maps
+                </Link>
               </BlockTitle>
-
-              <BlockHeader>{address}</BlockHeader>
+              <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
               <WikiInfo place={this.state.place} />
               <Button
                 round

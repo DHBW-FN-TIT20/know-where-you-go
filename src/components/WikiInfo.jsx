@@ -214,13 +214,15 @@ class WikiInfo extends React.Component {
 
     return (
       <>
-        <BlockTitle>
-          <Link external target="_blank" href={`https://de.wikipedia.org/wiki/${this.state.title}`}>
-            {this.state.title} <Icon f7="link" size={12} />
+        <BlockTitle className="mt-0">
+          <Link external className="fs-2" style={{ display: "block" }} target="_blank" href={`https://de.wikipedia.org/wiki/${this.state.title}`}>
+            {this.state.title} <img src="/img/wikipedia.ico" style={{ height: "16px", width: "16px", margin: "0 0 -2px 0.1rem" }} />
           </Link>
         </BlockTitle>
-        <Block>{this.state.description}</Block>
-        <Block>{this.state.image && <img src={this.state.image} style={{ maxWidth: "100%" }} />}</Block>
+        <Block className="font-light" style={{ textAlign: "justify" }}>
+          {this.state.image && <img src={this.state.image} style={{ maxWidth: "45%", float: "right", marginLeft: "12px" }} />}
+          {this.state.description}
+        </Block>
       </>
     );
   }
