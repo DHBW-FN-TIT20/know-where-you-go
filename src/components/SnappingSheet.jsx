@@ -229,9 +229,11 @@ class SnappingSheet extends React.Component {
         <div>{this.props.outBar}</div>
         <div
           ref={this.dragAreaRef}
+          className="primary-background"
           style={{
             height: this.state.sheetHeight,
             transition: this.state.sheetHeightTransitionStyle,
+            borderRadius: "var(--f7-searchbar-in-page-content-border-radius)",
           }}
         >
           <div ref={this.topBarRef}>{this.props.topBar}</div>
@@ -241,7 +243,6 @@ class SnappingSheet extends React.Component {
               height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
               overflow: "scroll",
             }}
-            className="primary-background"
             onScroll={e => {
               this.scrollAreaScrollTop = e.target.scrollTop;
             }}

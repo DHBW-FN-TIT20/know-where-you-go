@@ -17,17 +17,17 @@
   --f7-searchbar-in-page-content-input-border-radius: 0.9rem;
   --f7-searchbar-in-page-content-box-shadow: none;
   --f7-font-family: "Jost", sans-serif;
-  --f7-searchbar-input-bg-color: var(--primary-background-color);
-  --f7-searchbar-bg-color: var(--primary-background-color);
+  --f7-searchbar-input-bg-color: transparent;
+  --f7-searchbar-bg-color: transparent;
+  --f7-searchbar-border-color: transparent;
   --f7-searchbar-input-padding-horizontal: 24px;
   --f7-searchbar-input-font-size: 16px;
-  --f7-searchbar-border-color: var(--primary-background-color);
-  --f7-theme-color: #5ba0eb; /*#5e8adb;*/
+  --f7-theme-color: #64a9e2; /* #5ba0eb; #5e8adb; */
 }
 
 :root .dark {
-  --f7-searchbar-input-bg-color: var(--primary-background-color);
-  --f7-searchbar-bg-color: var(--primary-background-color);
+  --f7-searchbar-input-bg-color: transparent;
+  --f7-searchbar-bg-color: transparent;
 }
 
 /* Classes */
@@ -74,7 +74,6 @@
 }
 
 /* Framework7 Class Adjustments */
-
 .searchbar .searchbar-input-wrap {
   height: 50%;
   width: 90%;
@@ -108,13 +107,16 @@
   font-size: 17px;
 }
 
+.searchbar::after {
+  display: none;
+}
+
 .ios {
   --f7-searchbar-input-extra-padding-left: 8px;
 }
 
 /*disable ios transparent searchbar*/
-
 .ios-translucent-bars .searchbar {
-  background-color: var(--primary-background-color);
+  background-color: transparent;
   backdrop-filter: none;
 }
