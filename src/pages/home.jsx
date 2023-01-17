@@ -476,10 +476,9 @@ class Home extends React.Component {
                 }
                 e.target.blur();
                 this.focusOnSearchBar = true;
-                //e.target.focus({ preventScroll: true });
-                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
                 this.setState({ snapSheetToState: 2 });
                 this.updateSearchSuggestions(e.target.value);
+                setTimeout(function() { e.target.focus(); }, 1);
                 //ensure list is hidden when less than 3 characters are present
                 if (e.target.value.length < 3) {
                   this.setState({ showSearchSuggestions: false });
