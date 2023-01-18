@@ -217,13 +217,11 @@ class SnappingSheet extends React.Component {
 
   render() {
     return (
-      <div
-        className="snapping-sheet"
-      >
-        <div>{this.props.outBar}</div>
+      <div className="snapping-sheet pointer-none">
+        <div className="">{this.props.outBar}</div>
         <div
           ref={this.dragAreaRef}
-          className="primary-background"
+          className="primary-background pointer-all"
           style={{
             height: this.state.sheetHeight,
             transition: this.state.sheetHeightTransitionStyle,
@@ -235,7 +233,7 @@ class SnappingSheet extends React.Component {
             ref={this.scrollAreaRef}
             style={{
               height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
-              overflow: "hidden scroll",
+              overflow: "auto scroll",
             }}
             onScroll={e => {
               this.scrollAreaScrollTop = e.target.scrollTop;

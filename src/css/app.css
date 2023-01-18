@@ -157,3 +157,10 @@
   font-size: 1.2rem;
   line-height: 1.8rem;
 }
+
+.pointer-none {
+  pointer-events: none;
+}
+.pointer-all {
+  pointer-events: all;
+}

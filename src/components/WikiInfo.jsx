@@ -218,7 +218,7 @@ class WikiInfo extends React.Component {
           <Link
             external
             className="fs-2"
-            style={{ display: "block" }}
+            style={{ display: "block", maxWidth: "fit-content" }}
             target="_blank"
             href={`https://de.wikipedia.org/wiki/${this.state.title}`}
           >

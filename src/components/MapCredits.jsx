@@ -4,7 +4,7 @@ import React from "react";
 class MapCredits extends React.Component {
   render() {
     return (
-      <div className={"map-credits"}>
+      <div className={"map-credits pointer-all"}>
         <Link href={"https://leafletjs.com/"} external target="_blank">
           Leaflet
         </Link>
