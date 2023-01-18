@@ -106,3 +106,5 @@ url("./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47") format("wof
 .bi-map::before { content: "\f47f"; }
 .bi-cursor-fill::before { content: "\f2e1"; }
 .bi-cursor::before { content: "\f2e3"; }
+.bi-chevron-down::before { content: "\f282"; }
+.bi-chevron-up::before { content: "\f286"; }

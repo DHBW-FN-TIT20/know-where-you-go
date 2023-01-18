@@ -1,3 +1,4 @@
+import { Button } from "framework7-react";
 import React from "react";
 
 class SnappingSheet extends React.Component {
@@ -215,6 +216,32 @@ class SnappingSheet extends React.Component {
     this.dragStartPositionY = dragStartPositionY;
   };
 
+  /**
+   * Handles the movement of the sheet with a button on desktop view
+   */
+  handleButtonSheetMove = () => {
+    switch (this.currentState) {
+      case 1:
+        console.log("case 1");
+        this.currentState = 2;
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        break;
+      case 2:
+        console.log("case 2");
+        this.currentState = 0;
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-up");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-down");
+        break;
+      default:
+        console.log("case 0");
+        this.currentState = 1;
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        break;
+    }
+  };
+
   render() {
     return (
       <div className="snapping-sheet pointer-none">
@@ -228,12 +255,15 @@ class SnappingSheet extends React.Component {
             borderRadius: "var(--f7-searchbar-in-page-content-border-radius)",
           }}
         >
+          <Button fill className="swipe-button" onClick={this.handleButtonSheetMove()}>
+            <span className="bi bi-chevron-up" id="swipeButton"></span>
+          </Button>
           <div ref={this.topBarRef}>{this.props.topBar}</div>
           <div
             ref={this.scrollAreaRef}
             style={{
               height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
-              overflow: "auto scroll",
+              overflow: "auto",
             }}
             onScroll={e => {
               this.scrollAreaScrollTop = e.target.scrollTop;
@@ -248,7 +278,7 @@ class SnappingSheet extends React.Component {
 }
 
 // define the types of the properties that are passed to the component
-SnappingSheet.prototype.props = /** @type { { 
+SnappingSheet.prototype.props = /** @type { {
   outBar: React.ReactNode,
   topBar: React.ReactNode,
   scrollArea: React.ReactNode,

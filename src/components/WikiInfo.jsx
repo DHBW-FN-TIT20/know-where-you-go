@@ -223,7 +223,7 @@ class WikiInfo extends React.Component {
             href={`https://de.wikipedia.org/wiki/${this.state.title}`}
           >
             {this.state.title}{" "}
-            <img src="/img/wikipedia.ico" style={{ height: "16px", width: "16px", margin: "0 0 -2px 0.1rem" }} />
+            <img src="/img/Wikipedia.ico" style={{ height: "16px", width: "16px", margin: "0 0 -2px 0.1rem" }} />
           </Link>
         </BlockTitle>
         <Block className="font-light" style={{ textAlign: "justify" }}>

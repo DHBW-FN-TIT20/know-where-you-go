@@ -161,7 +161,7 @@ class Home extends React.Component {
     this.setState({ snapSheetToState: 1 });
     // to prevent updating pin when initially opening the map, otherwise do it
     if (updatePin) {
-      this.setState({ selectedCoords: coords })
+      this.setState({ selectedCoords: coords });
     }
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({

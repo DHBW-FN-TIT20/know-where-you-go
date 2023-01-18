@@ -89,8 +89,25 @@
 
 /* desktop view */
 .device-desktop .snapping-sheet {
-  max-width: 500px;
+  width: 500px;
+  max-width: 100%;
   left: auto;
+}
+.swipe-button {
+  display: none;
+  position: absolute;
+  height: 24px;
+  width: 84px;
+  font-size: 20px;
+  line-height: 34px;
+  margin-left: 50%;
+  transform: translate(-50%, -100%) !important;
+  border-radius: 0;
+  background-color: var(--primary-background-color);
+  mask-image: url("/img/SwipeButtonMaskLarger.svg");
+}
+.device-desktop .swipe-button {
+  display: block;
 }
 
 /* Framework7 Class Adjustments */
