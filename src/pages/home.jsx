@@ -317,7 +317,7 @@ class Home extends React.Component {
       name = rawName.split(",")[1] + " " + name;
     }
     return name;
-  }
+  };
 
   /**
    * Small Component to interact with the leaflet map
@@ -549,10 +549,15 @@ class Home extends React.Component {
                     );
                   })}
               </List>
-              <BlockTitle large className="mt-0 mb-1">{this.findHumanPlaceName(this.state.place.name)}</BlockTitle>
+              <BlockTitle large className="mt-0 mb-1">
+                {this.findHumanPlaceName(this.state.place.name)}
+              </BlockTitle>
               <BlockHeader>{address}</BlockHeader>
-              <BlockTitle medium style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none", marginTop: "1rem" }}>
-                Route:  {Math.round(this.state.routingDistance / 1000)} km,{" "}
+              <BlockTitle
+                medium
+                style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none", marginTop: "1rem" }}
+              >
+                Route: {Math.round(this.state.routingDistance / 1000)} km,{" "}
                 {this.state.routingTime > 3600
                   ? Math.round(this.state.routingTime / 3600) +
                     " h " +
@@ -574,7 +579,8 @@ class Home extends React.Component {
                     this.state.selectedCoords.lng
                   }
                 >
-                  <Icon f7="location" size={18} style={{ verticalAlign: "unset", marginRight: "0.25rem" }} />G-Maps
+                  <Icon f7="location" size={18} style={{ verticalAlign: "unset", marginRight: "0.25rem" }} />
+                  G-Maps
                 </Link>
               </BlockTitle>
               <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
