@@ -1,30 +1,47 @@
 # Define default arguments. These can be overridden at build time.
 ARG ENVIORMENT=production
 ARG PORT=80
-ARG NODE_VERSION=16-bullseye
+ARG NODE_VERSION=16
+ARG APACHE_VERSION=bullseye
 
-###### Create node_modules ######
+###### Create app ######
 FROM node:${NODE_VERSION} AS build
+
+# Set working direcory
 WORKDIR /tmp
 
 # Update container and install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+    && apt-get upgrade -y \
+#    && apt-get install -y {PACKAGES HERE} \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package.json and package-lock.json
 COPY ["package.json", "package-lock.json*", "./"]
 
+# Copy the app
+COPY src ./src
+COPY public ./public
+COPY design ./design
+COPY assets-src ./assets-src
+COPY framework7.json .
+COPY postcss.config.js .
+COPY vite.config.js .
+COPY workbox-config.js .
+
 # Install dependencies
+RUN npm install -g npm@latest \
+    && npm install
+
+# Build the App
 RUN npm run build
 
 
 ###### Final container ######
-FROM node:${NODE_VERSION}
-ARG ENVIORMENT
+FROM httpd:${APACHE_VERSION}
 ARG PORT
 
 # Set ENV Variables
-ENV NODE_ENV=${ENVIORMENT}
 ENV PORT=${PORT}
 
 
@@ -32,26 +49,11 @@ ENV PORT=${PORT}
 RUN apt-get update && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user and group for more security (not root user)
-RUN groupadd -r nodejs && useradd -r -g nodejs nodejs
-
 # Copy App
-COPY --chown=nodejs:nodejs ./app /app
+COPY --from=build /tmp/www /usr/local/apache2/htdocs
 
 # Set working directory
-WORKDIR /app
-
-# Copy node_modules from build container
-COPY --from=build --chown=nodejs:nodejs /tmp/node_modules ./node_modules
+WORKDIR /usr/local/apache2/htdocs/www
 
 # Expose default port
 EXPOSE ${PORT}
-
-# Create Volumes for DB and uploaded Images
-VOLUME [ "/app/public/images/upload" ]
-
-# Change user to nodejs
-USER nodejs
-
-# Command to be excecuted then the container start
-CMD [ "node", "bin/www" ]
