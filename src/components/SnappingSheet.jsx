@@ -252,7 +252,7 @@ class SnappingSheet extends React.Component {
    * Changes the icon of the swipe button to fit the current state
    * @param { int } state
    */
-  changeSwipeButtonIcon = (state) => {
+  changeSwipeButtonIcon = state => {
     switch (state) {
       case 1:
         document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
@@ -267,7 +267,7 @@ class SnappingSheet extends React.Component {
         document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
         break;
     }
-  }
+  };
 
   render() {
     return (
