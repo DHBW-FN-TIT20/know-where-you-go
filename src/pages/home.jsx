@@ -80,7 +80,7 @@ class Home extends React.Component {
           accuracy: position.coords.accuracy,
         },
       });
-      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18, true);
+      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18, true, false);
     });
 
     // update the current location every 5 seconds
@@ -149,7 +149,7 @@ class Home extends React.Component {
    * @param {{lat: number, lng: number}} coords
    * @param {number} zoom
    */
-  updatePlaceByCoords = async (coords, zoom, updateMap = false) => {
+  updatePlaceByCoords = async (coords, zoom, updateMap = false, updatePin = true) => {
     if (updateMap) {
       this.mapNeedsUpdate = true;
       this.mapZoom = zoom;
@@ -158,10 +158,11 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
-    this.setState({
-      snapSheetToState: 1,
-      selectedCoords: coords,
-    });
+    this.setState({ snapSheetToState: 1 });
+    // to prevent updating pin when initially opening the map, otherwise do it
+    if (updatePin) {
+      this.setState({ selectedCoords: coords })
+    }
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
@@ -449,17 +450,17 @@ class Home extends React.Component {
             visible={this.state.currentLocation.accuracy !== 0}
           />
           <LocationMarker
-            iconUrl={"img/OwnLocationMarker.png"}
+            iconUrl={"img/UserLocationMarker.png"}
             position={this.state.currentLocation}
             visible={this.state.currentLocation.accuracy !== 0}
-            size={{ width: 20, height: 20 }}
+            size={{ width: 24, height: 24 }}
           />
           <LocationMarker
-            iconUrl={"img/LocationMarker.png"}
+            iconUrl={"img/TargetLocationMarker.png"}
             position={this.state.selectedCoords}
-            visible={this.state.selectedCoords !== undefined}
-            size={{ width: 40, height: 40 }}
-            anchor={{ x: 20, y: 40 }}
+            visible={this.state.selectedCoords.lat !== undefined}
+            size={{ width: 36, height: 36 }}
+            anchor={{ x: 18, y: 36 }}
           />
           <this.MapHook />
           <OutlinePolygon placeName={this.state.place.name} />
@@ -472,7 +473,7 @@ class Home extends React.Component {
           outBar={
             <div className="out-bar">
               <MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />
-              <div className="map-button-wrapper">
+              <div className="map-button-wrapper pointer-all">
                 <Button fill className="map-button" onClick={this.toggleTileLayer}>
                   <span
                     className={this.state.tileLayerStyle === "satellite" ? "bi bi-map-fill" : "bi bi-map"}
