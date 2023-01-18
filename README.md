@@ -1,16 +1,16 @@
+<p align="center">
 <img src="design\kwyg-logo-background.svg" alt="Logog"
     style="display: block;
         margin-left: auto;
         margin-right: auto;
         width: 30%;"/>
+</p>
 
 <h1 style="text-align: center;"> Know Where You Go </h1>
 
 ![Website](https://img.shields.io/website?up_color=green&up_message=online&url=https%3A%2F%2Fknow-where-you-go.de) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/DHBW-FN-TIT20/know-where-you-go)
 
 Know-Where-You-Go ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie sind und wohin Sie gehen.
-
-<br/>
 
 # &#128270; Features
 
@@ -20,8 +20,6 @@ Know-Where-You-Go ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie si
 - Kann auf jedem Endgerät installiert werden
 - Selbst ohne Internetzugang kannst du deine letzten Inhalte sehen
 - Hoste die Anwendung auf deinem eigenem Server mit Docker 
-
-<br/>
 
 # &#128051; Deploy mit Docker
 
@@ -52,8 +50,6 @@ docker compose up -d
 docker-compose up -d
 ```
 
-<br/>
-
 # &#128640; Deploy Manuell 
 
 Ein Pre-Build ist unter [Releases](https://github.com/DHBW-FN-TIT20/know-where-you-go/releases) zu finden.
@@ -65,8 +61,6 @@ tar -xzvf release.tar.gz
 ```
 
 Die Daten im Ordner `www` können nun mit einem Beliebigen Server wie z.B. [Apache](https://httpd.apache.org) bereitgestellt werden.
-
-<br/>
 
 # &#128736; Bauen der Anwendung
 Es kann der `www` Ordner auch selbst gebaut werden.
@@ -82,8 +76,6 @@ npm run build
 ```
 
 Die Daten befinden sich im Ordner `www`.
-
-<br/>
 
 # &#129299; Entwickler
  
