@@ -36,6 +36,7 @@
 }
 
 /* Classes */
+
 .leaflet-control-container {
   display: none;
 }
@@ -78,7 +79,22 @@
   color: black;
 }
 
+.snapping-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* desktop view */
+.device-desktop .snapping-sheet {
+  max-width: 500px;
+  left: auto;
+}
+
 /* Framework7 Class Adjustments */
+
 .searchbar .searchbar-input-wrap {
   height: 50%;
   width: 90%;
@@ -100,7 +116,11 @@
 }
 
 .md .searchbar-disable-button::after {
-  margin-left: 16px;
+  margin-left: 4.6vw;
+  font-size: 17px;
+}
+.device-desktop .searchbar-disable-button::after {
+  margin-left: 24px;
   font-size: 17px;
 }
 

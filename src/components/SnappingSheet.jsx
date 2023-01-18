@@ -218,13 +218,7 @@ class SnappingSheet extends React.Component {
   render() {
     return (
       <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-        }}
+        className="snapping-sheet"
       >
         <div>{this.props.outBar}</div>
         <div
@@ -241,7 +235,7 @@ class SnappingSheet extends React.Component {
             ref={this.scrollAreaRef}
             style={{
               height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
-              overflow: "scroll",
+              overflow: "hidden scroll",
             }}
             onScroll={e => {
               this.scrollAreaScrollTop = e.target.scrollTop;
