@@ -109,6 +109,9 @@
 .device-desktop .swipe-button {
   display: block;
 }
+.leaflet-interactive {
+  cursor: unset !important;
+}
 
 /* Framework7 Class Adjustments */
 

@@ -82,6 +82,7 @@ class SnappingSheet extends React.Component {
       });
       this.currentState = this.props.currentState;
       this.props.snappedToHeight(this.props.snapHeightStates[this.props.currentState]);
+      this.changeSwipeButtonIcon(this.currentState);
     }
   }
 
@@ -142,6 +143,7 @@ class SnappingSheet extends React.Component {
 
     this.props.snappedToHeight(closestSheetHeightState);
     this.currentState = this.props.snapHeightStates.indexOf(closestSheetHeightState);
+    this.changeSwipeButtonIcon(this.currentState);
 
     // scroll the scroll area to the top with a animation if the sheet is not completely open
     if (this.currentState !== this.props.snapHeightStates.length - 1) {
@@ -222,25 +224,50 @@ class SnappingSheet extends React.Component {
   handleButtonSheetMove = () => {
     switch (this.currentState) {
       case 1:
-        console.log("case 1");
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[2] });
+        this.props.snappedToHeight(this.props.snapHeightStates[2]);
         this.currentState = 2;
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-up");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-down");
+        break;
+      case 2:
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[0] });
+        this.props.snappedToHeight(this.props.snapHeightStates[0]);
+        this.currentState = 0;
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        break;
+      default:
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[1] });
+        this.props.snappedToHeight(this.props.snapHeightStates[1]);
+        this.currentState = 1;
+        break;
+    }
+  };
+
+  /**
+   * Changes the icon of the swipe button to fit the current state
+   * @param { int } state
+   */
+  changeSwipeButtonIcon = (state) => {
+    switch (state) {
+      case 1:
         document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
         document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
         break;
       case 2:
-        console.log("case 2");
-        this.currentState = 0;
         document.getElementById("swipeButton")?.classList.remove("bi-chevron-up");
         document.getElementById("swipeButton")?.classList.add("bi-chevron-down");
         break;
       default:
-        console.log("case 0");
-        this.currentState = 1;
-        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
         document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
         break;
     }
-  };
+  }
 
   render() {
     return (
@@ -255,7 +282,7 @@ class SnappingSheet extends React.Component {
             borderRadius: "var(--f7-searchbar-in-page-content-border-radius)",
           }}
         >
-          <Button fill className="swipe-button" onClick={this.handleButtonSheetMove()}>
+          <Button fill className="swipe-button" onClick={this.handleButtonSheetMove}>
             <span className="bi bi-chevron-up" id="swipeButton"></span>
           </Button>
           <div ref={this.topBarRef}>{this.props.topBar}</div>
