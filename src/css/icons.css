@@ -11,7 +11,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url("../fonts/material-icons-outlined.woff2") format("woff2"), url("../fonts/material-icons-outlined.woff") format("woff");
+  src: url("../fonts/material-icons-outlined.woff2") format("woff2"),
+    url("../fonts/material-icons-outlined.woff") format("woff");
 }
 .material-icons {
   font-family: "Material Icons";
@@ -84,7 +85,7 @@
   font-display: block;
   font-family: "bootstrap-icons";
   src: url("./fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47") format("woff2"),
-url("./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47") format("woff");
+    url("./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47") format("woff");
 }
 
 .bi::before,
@@ -97,14 +98,26 @@ url("./fonts/bootstrap-icons.woff?24e3eb84d0bcaf83d77f904c78ac1f47") format("wof
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-  vertical-align: -.125em;
+  vertical-align: -0.125em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.bi-map-fill::before { content: "\f47e"; }
-.bi-map::before { content: "\f47f"; }
-.bi-cursor-fill::before { content: "\f2e1"; }
-.bi-cursor::before { content: "\f2e3"; }
-.bi-chevron-down::before { content: "\f282"; }
-.bi-chevron-up::before { content: "\f286"; }
+.bi-map-fill::before {
+  content: "\f47e";
+}
+.bi-map::before {
+  content: "\f47f";
+}
+.bi-cursor-fill::before {
+  content: "\f2e1";
+}
+.bi-cursor::before {
+  content: "\f2e3";
+}
+.bi-chevron-down::before {
+  content: "\f282";
+}
+.bi-chevron-up::before {
+  content: "\f286";
+}
