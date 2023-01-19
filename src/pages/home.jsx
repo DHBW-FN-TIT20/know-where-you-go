@@ -428,10 +428,51 @@ class Home extends React.Component {
     // address object -> string
     let address = "";
     if (this.state.place.address !== undefined) {
-      Object.values(this.state.place.address).forEach(value => {
-        if (value !== undefined && value !== "") address += value + ", ";
-      });
+      let addressObject = this.state.place.address;
+      if (addressObject.road !== undefined && addressObject.road !== "") {
+        address += addressObject.road;
+        address +=
+          addressObject.houseNumber !== undefined && addressObject.houseNumber !== ""
+            ? ` ${addressObject.houseNumber}`
+            : "";
+      }
+      if (address === "") {
+        address +=
+          addressObject.postcode !== undefined && addressObject.postcode !== "" ? `${addressObject.postcode}` : "";
+      } else {
+        address +=
+          addressObject.postcode !== undefined && addressObject.postcode !== "" ? `, ${addressObject.postcode}` : "";
+      }
+      if (address === "") {
+        address += addressObject.city !== undefined && addressObject.city !== "" ? `${addressObject.city}` : "";
+      } else {
+        address += addressObject.city !== undefined && addressObject.city !== "" ? ` ${addressObject.city}` : "";
+      }
+      if (address === "") {
+        address +=
+          addressObject.municipality !== undefined && addressObject.municipality !== ""
+            ? `${addressObject.municipality}`
+            : "";
+      } else {
+        address +=
+          addressObject.municipality !== undefined && addressObject.municipality !== ""
+            ? `, ${addressObject.municipality}`
+            : "";
+      }
+      if (address === "") {
+        address += addressObject.state !== undefined && addressObject.state !== "" ? `${addressObject.state}` : "";
+      } else {
+        address += addressObject.state !== undefined && addressObject.state !== "" ? `, ${addressObject.state}` : "";
+      }
+      if (address === "") {
+        address +=
+          addressObject.country !== undefined && addressObject.country !== "" ? `${addressObject.country}` : "";
+      } else {
+        address +=
+          addressObject.country !== undefined && addressObject.country !== "" ? `, ${addressObject.country}` : "";
+      }
     }
+    console.log(this.state.place.address);
 
     return (
       <Page name="home">
