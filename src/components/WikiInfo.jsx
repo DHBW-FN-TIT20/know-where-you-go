@@ -214,6 +214,7 @@ class WikiInfo extends React.Component {
 
     return (
       <>
+        <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
         <BlockTitle className="mt-0 mb-1">
           <Link
             external

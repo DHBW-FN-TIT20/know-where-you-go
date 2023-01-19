@@ -12,6 +12,8 @@ import {
   getCoordsFromSearchText,
   saveObjectToLocalStorage,
   getObjectFromLocalStorage,
+  formatAddressObject,
+  findHumanPlaceName,
 } from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
@@ -53,7 +55,7 @@ class Home extends React.Component {
     this.dontUpdateButton = true;
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
-    this.mapSlowAnimation = true;
+    this.initialAnimation = true;
     this.routingNeedsUpdate = false;
     this.tileLayerNeedsUpdate = true;
     this.mapZoom = 4;
@@ -86,6 +88,14 @@ class Home extends React.Component {
     // update the current location every 5 seconds
     this.currentLocationInterval = setInterval(() => {
       navigator.geolocation.getCurrentPosition(position => {
+        if (
+          this.currentLocationActive &&
+          (Math.abs(position.coords.latitude - this.mapCenter.lat) > 0.0001 ||
+            Math.abs(position.coords.longitude - this.mapCenter.lng) > 0.0001)
+        ) {
+          this.mapNeedsUpdate = true;
+          this.mapCenter = { lat: position.coords.latitude, lng: position.coords.longitude };
+        }
         this.setState({
           currentLocation: {
             lat: position.coords.latitude,
@@ -305,22 +315,6 @@ class Home extends React.Component {
   };
 
   /**
-   * Finds a fitting location name
-   * @returns {string}
-   */
-  findHumanPlaceName = rawName => {
-    if (rawName === undefined) {
-      return "";
-    }
-
-    let name = rawName.split(",")[0];
-    if (!isNaN(parseInt(name))) {
-      name = rawName.split(",")[1] + " " + name;
-    }
-    return name;
-  };
-
-  /**
    * Small Component to interact with the leaflet map
    * @returns {null}
    */
@@ -329,9 +323,9 @@ class Home extends React.Component {
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
     if (this.mapNeedsUpdate) {
-      map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.mapSlowAnimation ? 4 : 1 });
+      map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.initialAnimation ? 4 : 1 });
       this.mapNeedsUpdate = false;
-      this.mapSlowAnimation = false;
+      this.initialAnimation = false;
     }
 
     useMapEvents({
@@ -425,55 +419,6 @@ class Home extends React.Component {
   };
 
   render() {
-    // address object -> string
-    let address = "";
-    if (this.state.place.address !== undefined) {
-      let addressObject = this.state.place.address;
-      if (addressObject.road !== undefined && addressObject.road !== "") {
-        address += addressObject.road;
-        address +=
-          addressObject.houseNumber !== undefined && addressObject.houseNumber !== ""
-            ? ` ${addressObject.houseNumber}`
-            : "";
-      }
-      if (address === "") {
-        address +=
-          addressObject.postcode !== undefined && addressObject.postcode !== "" ? `${addressObject.postcode}` : "";
-      } else {
-        address +=
-          addressObject.postcode !== undefined && addressObject.postcode !== "" ? `, ${addressObject.postcode}` : "";
-      }
-      if (address === "") {
-        address += addressObject.city !== undefined && addressObject.city !== "" ? `${addressObject.city}` : "";
-      } else {
-        address += addressObject.city !== undefined && addressObject.city !== "" ? ` ${addressObject.city}` : "";
-      }
-      if (address === "") {
-        address +=
-          addressObject.municipality !== undefined && addressObject.municipality !== ""
-            ? `${addressObject.municipality}`
-            : "";
-      } else {
-        address +=
-          addressObject.municipality !== undefined && addressObject.municipality !== ""
-            ? `, ${addressObject.municipality}`
-            : "";
-      }
-      if (address === "") {
-        address += addressObject.state !== undefined && addressObject.state !== "" ? `${addressObject.state}` : "";
-      } else {
-        address += addressObject.state !== undefined && addressObject.state !== "" ? `, ${addressObject.state}` : "";
-      }
-      if (address === "") {
-        address +=
-          addressObject.country !== undefined && addressObject.country !== "" ? `${addressObject.country}` : "";
-      } else {
-        address +=
-          addressObject.country !== undefined && addressObject.country !== "" ? `, ${addressObject.country}` : "";
-      }
-    }
-    console.log(this.state.place.address);
-
     return (
       <Page name="home">
         <MapContainer
@@ -548,18 +493,18 @@ class Home extends React.Component {
                   e.target.focus();
                 }, 1);
                 //ensure list is hidden when less than 3 characters are present
-                if (e.target.value.length < 3) {
+                /*if (e.target.value.length < 3) {
                   this.setState({ showSearchSuggestions: false });
-                }
+                }*/
               }}
               placeholder="Ort, Adresse oder Koordinaten (lat, lng)"
               onChange={e => {
                 this.setState({ searchText: e.target.value, showSearchSuggestions: true });
                 this.updateSearchSuggestions(e.target.value);
                 //ensure list is hidden when less than 3 characters are present
-                if (e.target.value.length < 3) {
+                /*if (e.target.value.length < 3) {
                   this.setState({ showSearchSuggestions: false });
-                }
+                }*/
               }}
               onSubmit={() => {
                 document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
@@ -592,9 +537,9 @@ class Home extends React.Component {
                   })}
               </List>
               <BlockTitle large className="mt-0 mb-1">
-                {this.findHumanPlaceName(this.state.place.name)}
+                {findHumanPlaceName(this.state.place.name)}
               </BlockTitle>
-              <BlockHeader>{address}</BlockHeader>
+              <BlockHeader>{formatAddressObject(this.state.place.address)}</BlockHeader>
               <Block
                 medium
                 className="route-wrapper"
@@ -636,7 +581,6 @@ class Home extends React.Component {
                   </Link>
                 </div>
               </Block>
-              <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
               <WikiInfo place={this.state.place} />
               <Block className="mt-1">
                 <Button outline href="/impressum" text="Impressum" className="impressum-button"></Button>

@@ -149,3 +149,76 @@ export const removeObjectFromLocalStorage = key => {
 export const removeAllObjectsFromLocalStorage = () => {
   localStorage.clear();
 };
+
+/**
+ * Formats the address object into a human readable st
+ * @param {Object} addressObject
+ * @returns {string}
+ */
+export const formatAddressObject = addressObject => {
+  // address object -> string
+  let address = "";
+  if (addressObject !== undefined) {
+    if (addressObject.road !== undefined && addressObject.road !== "") {
+      address += addressObject.road;
+      address +=
+        addressObject.houseNumber !== undefined && addressObject.houseNumber !== ""
+          ? ` ${addressObject.houseNumber}`
+          : "";
+    }
+    if (address === "") {
+      address +=
+        addressObject.postcode !== undefined && addressObject.postcode !== "" ? `${addressObject.postcode}` : "";
+    } else {
+      address +=
+        addressObject.postcode !== undefined && addressObject.postcode !== "" ? `, ${addressObject.postcode}` : "";
+    }
+    if (address === "") {
+      address += addressObject.city !== undefined && addressObject.city !== "" ? `${addressObject.city}` : "";
+    } else {
+      address += addressObject.city !== undefined && addressObject.city !== "" ? ` ${addressObject.city}` : "";
+    }
+    if (address === "") {
+      address +=
+        addressObject.municipality !== undefined && addressObject.municipality !== ""
+          ? `${addressObject.municipality}`
+          : "";
+    } else {
+      address +=
+        addressObject.municipality !== undefined && addressObject.municipality !== ""
+          ? `, ${addressObject.municipality}`
+          : "";
+    }
+    if (address === "") {
+      address += addressObject.state !== undefined && addressObject.state !== "" ? `${addressObject.state}` : "";
+    } else {
+      address += addressObject.state !== undefined && addressObject.state !== "" ? `, ${addressObject.state}` : "";
+    }
+    if (address === "") {
+      address += addressObject.country !== undefined && addressObject.country !== "" ? `${addressObject.country}` : "";
+    } else {
+      address +=
+        addressObject.country !== undefined && addressObject.country !== "" ? `, ${addressObject.country}` : "";
+    }
+  }
+
+  return address;
+};
+
+/**
+ * Finds a fitting location name
+ * @returns {string}
+ */
+export const findHumanPlaceName = rawName => {
+  if (rawName === undefined) {
+    return "";
+  }
+
+  let name = rawName.split(",")[0];
+  if (!isNaN(parseInt(name))) {
+    name = rawName.split(",")[1] + " " + name;
+  } else if (name.length > 4) {
+    name = name + ", " + rawName.split(",")[1];
+  }
+  return name;
+};
