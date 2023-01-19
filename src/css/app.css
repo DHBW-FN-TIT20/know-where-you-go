@@ -13,6 +13,11 @@
   font-weight: 200;
   src: url("/Jost/static/Jost-ExtraLight.ttf");
 }
+@font-face {
+  font-family: "Jost";
+  font-weight: bolder;
+  src: url("/Jost/static/Jost-Medium.ttf");
+}
 
 /* Tags */
 :root {
@@ -28,6 +33,7 @@
   --f7-searchbar-input-padding-horizontal: 24px;
   --f7-searchbar-input-font-size: 16px;
   --f7-theme-color: #64a9e2; /* #5ba0eb; #5e8adb; */
+  --f7-block-padding-horizontal: 24px;
 }
 
 :root .dark {
@@ -85,6 +91,59 @@
   left: 0;
   right: 0;
   z-index: 1000;
+}
+
+.route-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  color: white;
+  margin-top: 1.4rem !important;
+  margin-bottom: 1rem !important;
+}
+.route-left,
+.route-right {
+  display: flex;
+  flex-direction: column;
+}
+.route-left {
+  justify-content: start;
+  line-height: 1.8rem;
+}
+.route-right {
+  justify-content: end;
+}
+.route-right span {
+  padding: 0 0.4rem 0.2rem 0.4rem;
+  text-align: right;
+}
+.google-maps-button {
+  margin: 0 !important;
+  padding: 1px var(--f7-button-padding-horizontal) 0 var(--f7-button-padding-horizontal);
+  border-radius: 0.85rem;
+  font-size: var(--f7-button-font-size);
+  font-weight: normal;
+  border: 1px solid white;
+  color: white;
+  text-transform: none;
+}
+.ios .google-maps-button {
+  border-radius: 0.7rem;
+}
+
+.impressum-button {
+  width: fit-content;
+  margin: 0 auto 2rem auto !important;
+  padding: 0 var(--f7-button-padding-horizontal);
+  border-radius: 0.9rem;
+  font-weight: normal;
+  border: 1px solid white;
+  color: white;
+  text-transform: none;
+}
+.ios .impressum-button {
+  border-radius: 0.7rem;
 }
 
 /* desktop view */
@@ -162,6 +221,9 @@
 .font-light {
   font-weight: 200;
 }
+.font-bold {
+  font-weight: bolder;
+}
 
 .mt-0 {
   margin-top: 0;
@@ -176,6 +238,14 @@
 .fs-2 {
   font-size: 1.2rem;
   line-height: 1.8rem;
+}
+.fs-3 {
+  font-size: 1.4rem;
+  line-height: 1.8rem;
+}
+.fs-4 {
+  font-size: 1.6rem;
+  line-height: 2rem;
 }
 
 .pointer-none {

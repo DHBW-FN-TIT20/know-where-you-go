@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon, Link } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Block, Link } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
@@ -554,45 +554,50 @@ class Home extends React.Component {
                 {this.findHumanPlaceName(this.state.place.name)}
               </BlockTitle>
               <BlockHeader>{address}</BlockHeader>
-              <BlockTitle
+              <Block
                 medium
-                style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none", marginTop: "1rem" }}
+                className="route-wrapper"
+                style={{ display: this.state.showRoutingDistanceAndDuration ? "flex" : "none" }}
               >
-                Route: {Math.round(this.state.routingDistance / 1000)} km,{" "}
-                {this.state.routingTime > 3600
-                  ? Math.round(this.state.routingTime / 3600) +
-                    " h " +
-                    Math.round((this.state.routingTime % 3600) / 60) +
-                    " min"
-                  : Math.round(this.state.routingTime / 60) + " min"}
-                <Link
-                  style={{ margin: "0 0.8rem", display: "unset" }}
-                  external
-                  target="_blank"
-                  href={
-                    "https://www.google.com/maps/dir/?api=1&origin=" +
-                    this.state.currentLocation.lat +
-                    "%2C" +
-                    this.state.currentLocation.lng +
-                    "&destination=" +
-                    this.state.selectedCoords.lat +
-                    "%2C" +
-                    this.state.selectedCoords.lng
-                  }
-                >
-                  <Icon f7="location" size={18} style={{ verticalAlign: "unset", marginRight: "0.25rem" }} />
-                  G-Maps
-                </Link>
-              </BlockTitle>
+                <div className="route-left">
+                  <span className="time font-bold fs-4">
+                    {this.state.routingTime > 3600
+                      ? Math.round(this.state.routingTime / 3600) +
+                        " Std. " +
+                        Math.round((this.state.routingTime % 3600) / 60) +
+                        " Min."
+                      : Math.round(this.state.routingTime / 60) + " Minuten"}
+                  </span>
+                  <span className="font-light fs-3">von aktueller Position</span>
+                </div>
+                <div className="route-right fs-3">
+                  <span className="font-light">
+                    {Math.round(this.state.routingDistance / 1000)} km{""}
+                  </span>
+                  <Link
+                    outline
+                    external
+                    style={{ margin: "0 0.8rem", display: "unset" }}
+                    className="google-maps-button"
+                    target="_blank"
+                    href={
+                      "https://www.google.com/maps/dir/?api=1&origin=" +
+                      this.state.currentLocation.lat +
+                      "%2C" +
+                      this.state.currentLocation.lng +
+                      "&destination=" +
+                      this.state.selectedCoords.lat +
+                      "%2C" +
+                      this.state.selectedCoords.lng
+                    }
+                  >
+                    Google Maps
+                  </Link>
+                </div>
+              </Block>
               <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
               <WikiInfo place={this.state.place} />
-              <Button
-                round
-                outline
-                href="/impressum"
-                text="Impressum"
-                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
-              ></Button>
+              <Button outline href="/impressum" text="Impressum" className="impressum-button"></Button>
             </div>
           }
         />
