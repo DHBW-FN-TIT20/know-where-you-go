@@ -489,22 +489,12 @@ class Home extends React.Component {
                 this.focusOnSearchBar = true;
                 this.setState({ snapSheetToState: 2 });
                 this.updateSearchSuggestions(e.target.value);
-                setTimeout(() => {
-                  e.target.focus();
-                }, 1);
-                //ensure list is hidden when less than 3 characters are present
-                /*if (e.target.value.length < 3) {
-                  this.setState({ showSearchSuggestions: false });
-                }*/
+                e.target.focus({ preventScroll: true });
               }}
               placeholder="Ort, Adresse oder Koordinaten (lat, lng)"
               onChange={e => {
                 this.setState({ searchText: e.target.value, showSearchSuggestions: true });
                 this.updateSearchSuggestions(e.target.value);
-                //ensure list is hidden when less than 3 characters are present
-                /*if (e.target.value.length < 3) {
-                  this.setState({ showSearchSuggestions: false });
-                }*/
               }}
               onSubmit={() => {
                 document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
