@@ -228,22 +228,21 @@ class SnappingSheet extends React.Component {
         this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[2] });
         this.props.snappedToHeight(this.props.snapHeightStates[2]);
         this.currentState = 2;
-        document.getElementById("swipeButton")?.classList.remove("bi-chevron-up");
-        document.getElementById("swipeButton")?.classList.add("bi-chevron-down");
+        this.changeSwipeButtonIcon(this.currentState);
         break;
       case 2:
         // transition to the new sheet height
         this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[0] });
         this.props.snappedToHeight(this.props.snapHeightStates[0]);
         this.currentState = 0;
-        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
-        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        this.changeSwipeButtonIcon(this.currentState);
         break;
       default:
         // transition to the new sheet height
-        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[1] });
-        this.props.snappedToHeight(this.props.snapHeightStates[1]);
-        this.currentState = 1;
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[2] });
+        this.props.snappedToHeight(this.props.snapHeightStates[2]);
+        this.currentState = 2;
+        this.changeSwipeButtonIcon(this.currentState);
         break;
     }
   };
