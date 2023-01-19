@@ -22,7 +22,7 @@ Know-Where-You-Go ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie si
 - Selbst ohne Internetzugang kannst du deine letzten Inhalte sehen
 - Hoste die Anwendung auf deinem eigenem Server mit Docker
 
-Weitere Technische Deatails / Highlight findest du [hier](#-technische-details-und-highlights)
+Weitere Technische Details / Highlights findest du [hier](#-technische-details-und-highlights)
 
 # &#128051; Deploy mit Docker
 
