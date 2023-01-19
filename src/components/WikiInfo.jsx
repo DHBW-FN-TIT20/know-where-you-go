@@ -1,4 +1,4 @@
-import { Block, BlockTitle, Icon, Link } from "framework7-react";
+import { Block, BlockTitle, Link } from "framework7-react";
 import { getPlaceByNominatimData } from "../js/helpers";
 
 import React from "react";

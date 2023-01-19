@@ -486,7 +486,6 @@ class Home extends React.Component {
                   this.updateSearchSuggestions(e.target.value);
                   return;
                 }
-
                 if (this.focusOnSearchBar) {
                   this.focusOnSearchBar = false;
                   return;
