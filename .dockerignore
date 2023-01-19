@@ -1,0 +1,9 @@
+.vscode
+.gitignore
+.github
+.husky
+.prettierrc
+node_modules
+README.md
+CHANGELOG.md
+LICENSE

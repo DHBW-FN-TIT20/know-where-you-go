@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  know_where_you_go:
+    container_name: know_where_you_go
+    build: .
+    ports:
+      - "80:80"
