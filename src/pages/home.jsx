@@ -511,7 +511,7 @@ class Home extends React.Component {
                   this.setState({ showSearchSuggestions: false });
                 }
               }}
-              placeholder="Place, address, or coordinates (lat, lng)"
+              placeholder="Ort, Adresse oder Koordinaten (lat, lng)"
               onChange={e => {
                 this.setState({ searchText: e.target.value, showSearchSuggestions: true });
                 this.updateSearchSuggestions(e.target.value);
