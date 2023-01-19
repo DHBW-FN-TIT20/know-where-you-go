@@ -151,7 +151,7 @@ export const removeAllObjectsFromLocalStorage = () => {
 };
 
 /**
- * Formats the address object into a human readable st
+ * Formats the address object into a human readable string
  * @param {Object} addressObject
  * @returns {string}
  */
@@ -217,8 +217,12 @@ export const findHumanPlaceName = rawName => {
   let name = rawName.split(",")[0];
   if (!isNaN(parseInt(name))) {
     name = rawName.split(",")[1] + " " + name;
-  } else if (name.length > 4) {
-    name = name + ", " + rawName.split(",")[1];
+  } else if (name.length < 4) {
+    if (!isNaN(parseInt(rawName.split(",")[1])) && rawName.split(",")[2] !== undefined) {
+      name = name + ", " + rawName.split(",")[2] + " " + rawName.split(",")[1];
+    } else {
+      name = name + ", " + rawName.split(",")[1];
+    }
   }
   return name;
 };
