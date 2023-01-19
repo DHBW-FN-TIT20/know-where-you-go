@@ -481,6 +481,12 @@ class Home extends React.Component {
               style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
               value={this.state.searchText}
               onFocus={e => {
+                if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+                  this.setState({ snapSheetToState: 2 });
+                  this.updateSearchSuggestions(e.target.value);
+                  return;
+                }
+
                 if (this.focusOnSearchBar) {
                   this.focusOnSearchBar = false;
                   return;
