@@ -15,7 +15,7 @@ class Impressum extends React.Component {
           </Link>
         </Block>
         <Block className="mt-1 mb-1">
-          <img src="/img/kwygLogo.svg" style={{ maxWidth: "100%", transition: "inherit" }}></img>
+          <img src="/img/KWYGLogo.svg" style={{ maxWidth: "100%", transition: "inherit" }}></img>
         </Block>
         <Block strong className="mt-1">
           <p>
