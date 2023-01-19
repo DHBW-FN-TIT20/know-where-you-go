@@ -1,31 +1,274 @@
-/* Your app custom styles here */
-:root {
-  --f7-block-title-white-space: auto;
+/* Includes */
+@font-face {
+  font-family: "Jost";
+  src: url("/Jost/Jost-VariableFont_wght.ttf");
 }
+@font-face {
+  font-family: "Jost";
+  font-style: italic;
+  src: url("/Jost/Jost-Italic-VariableFont_wght.ttf");
+}
+@font-face {
+  font-family: "Jost";
+  font-weight: 200;
+  src: url("/Jost/static/Jost-ExtraLight.ttf");
+}
+@font-face {
+  font-family: "Jost";
+  font-weight: bolder;
+  src: url("/Jost/static/Jost-Medium.ttf");
+}
+
+/* Tags */
+:root {
+  --primary-background-color: #222222;
+  --f7-block-title-white-space: auto;
+  --f7-searchbar-in-page-content-border-radius: 1.4rem 1.4rem 0 0;
+  --f7-searchbar-in-page-content-input-border-radius: 0.9rem;
+  --f7-searchbar-in-page-content-box-shadow: none;
+  --f7-font-family: "Jost", sans-serif;
+  --f7-searchbar-input-bg-color: transparent;
+  --f7-searchbar-bg-color: transparent;
+  --f7-searchbar-border-color: transparent;
+  --f7-searchbar-input-padding-horizontal: 24px;
+  --f7-searchbar-input-font-size: 16px;
+  --f7-theme-color: #64a9e2; /* #5ba0eb; #5e8adb; */
+  --f7-block-padding-horizontal: 24px;
+}
+
+:root .dark {
+  --f7-searchbar-input-bg-color: transparent;
+  --f7-searchbar-bg-color: transparent;
+}
+
+/* Classes */
 
 .leaflet-control-container {
   display: none;
 }
 
-.grey-blur {
-  background-color: rgba(0, 0, 0, 0.8);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+.primary-background {
+  background-color: var(--primary-background-color);
 }
 
-.light-blue-blur {
-  background-color: rgba(0, 0, 255, 0.3);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+.out-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.map-button-wrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
 }
 
 .map-button {
-  background-color: rgba(0, 0, 0, 0.2);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background-color: var(--primary-background-color);
   z-index: 1000;
-  height: 45px;
-  width: 45px;
-  right: 5px;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 0.8rem;
+}
+
+.map-credits {
+  display: flex;
+  flex-direction: row;
+  right: 5;
+  color: black;
+  padding: 0 1rem;
+  font-size: 10px;
+}
+
+.map-credits a {
+  color: black;
+}
+
+.snapping-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.route-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  color: white;
+  margin-top: 1.4rem !important;
+  margin-bottom: 1rem !important;
+}
+.route-left,
+.route-right {
+  display: flex;
+  flex-direction: column;
+}
+.route-left {
+  justify-content: start;
+  line-height: 1.8rem;
+}
+.route-right {
+  justify-content: end;
+}
+.route-right span {
+  padding: 0 0.4rem 0.2rem 0.4rem;
+  text-align: right;
+}
+.google-maps-button {
+  margin: 0 !important;
+  padding: 1px var(--f7-button-padding-horizontal) 0 var(--f7-button-padding-horizontal);
+  border-radius: 0.85rem;
+  font-size: var(--f7-button-font-size);
+  font-weight: normal;
+  border: 1px solid var(--f7-theme-color);
+  color: var(--f7-theme-color);
+  text-transform: none;
+}
+.ios .google-maps-button {
+  border-radius: 0.7rem;
+}
+
+.impressum-button {
+  width: fit-content;
+  margin: 0 auto 2rem auto !important;
+  border-radius: 0.9rem;
+  font-weight: normal;
+  border: 1px solid white;
+  color: white;
+  text-transform: none;
+}
+.ios .impressum-button {
+  border-radius: 0.7rem;
+}
+
+/* desktop view */
+.device-desktop .snapping-sheet {
+  width: 500px;
+  max-width: 100%;
+  left: auto;
+}
+.swipe-button {
+  display: none;
   position: absolute;
+  height: 24px;
+  width: 84px;
+  font-size: 20px;
+  line-height: 34px;
+  margin-left: 50%;
+  transform: translate(-50%, -100%) !important;
+  border-radius: 0;
+  background-color: var(--primary-background-color);
+  mask-image: url("/img/SwipeButtonMaskLarger.svg");
+}
+.device-desktop .swipe-button {
+  display: block;
+}
+.leaflet-interactive {
+  cursor: unset !important;
+}
+
+/* Framework7 Class Adjustments */
+
+.searchbar .searchbar-input-wrap {
+  height: 50%;
+  width: 90%;
+  margin: 1rem auto;
+  border-radius: 0.8rem;
+  border: 1px solid var(--f7-searchbar-placeholder-color);
+}
+.searchbar-focused .searchbar-input-wrap {
+  border-color: var(--f7-searchbar-input-text-color);
+}
+
+.searchbar-input-wrap > input:nth-child(1) {
+  border-radius: 1rem;
+}
+
+.md .searchbar-icon:after {
+  font-size: 17px;
+  margin-top: 2px;
+}
+
+.md .searchbar-disable-button::after {
+  margin-left: 4.6vw;
+  font-size: 17px;
+}
+.device-desktop .searchbar-disable-button::after {
+  margin-left: 24px;
+  font-size: 17px;
+}
+
+.searchbar::after {
+  display: none;
+}
+
+.ios {
+  --f7-searchbar-input-extra-padding-left: 8px;
+}
+
+/*disable ios transparent searchbar*/
+.ios-translucent-bars .searchbar {
+  background-color: transparent;
+  backdrop-filter: none;
+}
+
+/* helper classes */
+.font-light {
+  font-weight: 200;
+}
+.font-bold {
+  font-weight: bolder;
+}
+.text-center {
+  text-align: center;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+.mt-1 {
+  margin-top: 0.5rem;
+}
+.mt-2 {
+  margin-top: 1rem;
+}
+.mt-3 {
+  margin-top: 3rem;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 1rem;
+}
+
+.fs-2 {
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+}
+.fs-3 {
+  font-size: 1.4rem;
+  line-height: 1.8rem;
+}
+.fs-4 {
+  font-size: 1.6rem;
+  line-height: 2rem;
+}
+
+.pointer-none {
+  pointer-events: none;
+}
+.pointer-all {
+  pointer-events: all;
+}
+
+.overflow-auto {
+  overflow: auto;
 }

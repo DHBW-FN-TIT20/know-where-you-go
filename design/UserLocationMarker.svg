@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666668 8.4666668"
+   version="1.1"
+   id="svg5"
+   inkscape:export-filename="..\public\img\UserLocationCursor.png"
+   inkscape:export-xdpi="384"
+   inkscape:export-ydpi="384"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="UserLocationCursor.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="7.2679756"
+     inkscape:cx="1.1695141"
+     inkscape:cy="39.35071"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1911" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1756">
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="0"
+         id="stop1752" />
+      <stop
+         style="stop-color:#cbcbcb;stop-opacity:1;"
+         offset="0.88344461"
+         id="stop1886" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop1754" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1756"
+       id="radialGradient1884"
+       cx="4.2333331"
+       cy="4.2333331"
+       fx="4.2333331"
+       fy="4.2333331"
+       r="4.2333331"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0086505,0.00903399,-0.00890015,0.99370832,0.00105718,-0.01160917)" />
+  </defs>
+  <g
+     inkscape:label="v1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:none">
+    <circle
+       style="fill:url(#radialGradient1884);fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none"
+       id="path340"
+       cx="4.2333331"
+       cy="4.2333331"
+       r="4.2333331" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke:#222222;stroke-width:1.23418;stroke-dasharray:none;stroke-opacity:1"
+       id="path349"
+       cx="4.2333336"
+       cy="4.2333331"
+       rx="3.0870771"
+       ry="3.0870767" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="v2"
+     style="display:none">
+    <circle
+       style="fill:#222222;fill-opacity:0.501416;stroke:none;stroke-width:0;stroke-dasharray:none"
+       id="path1889"
+       cx="4.4979167"
+       cy="4.4979167"
+       r="3.96875" />
+    <circle
+       style="fill:#222222;fill-opacity:1;stroke:#ffffff;stroke-width:0.721591;stroke-dasharray:none;stroke-opacity:1"
+       id="circle1891"
+       cx="4.2333336"
+       cy="4.2333336"
+       r="3.6079545" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g1911"
+     inkscape:label="v3">
+    <path
+       id="rect2017"
+       style="fill:#222222;fill-opacity:0.501416;stroke:#ffffff;stroke-width:0"
+       d="M 6.0932341,0.99981096 0.85306412,5.8216264 c 0,0 0.34516108,0.9481141 0.83843008,1.4825273 1.5498395,1.5499435 4.062717,1.5500283 5.6126601,1.881e-4 C 8.8540972,5.7545024 8.8541818,3.2416247 7.3043424,1.6916818 6.5944529,1.0819049 6.0932341,0.99981096 6.0932341,0.99981096 Z"
+       sodipodi:nodetypes="cccscc"
+       inkscape:transform-center-x="-0.62227748"
+       inkscape:transform-center-y="0.56826193" />
+    <ellipse
+       style="fill:#222222;fill-opacity:1;stroke:#ffffff;stroke-width:1.00607;stroke-dasharray:none;stroke-opacity:1"
+       id="circle1909"
+       cx="3.9687517"
+       cy="3.9687498"
+       rx="3.201133"
+       ry="3.2011328" />
+  </g>
+</svg>

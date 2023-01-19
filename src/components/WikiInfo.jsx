@@ -1,4 +1,4 @@
-import { Block, BlockTitle, Icon, Link } from "framework7-react";
+import { Block, BlockTitle, Link } from "framework7-react";
 import { getPlaceByNominatimData } from "../js/helpers";
 
 import React from "react";
@@ -208,19 +208,31 @@ class WikiInfo extends React.Component {
   render() {
     if (this.state.noPlaceGiven) return null;
 
-    if (this.state.isLoading) return <Block className="loading">Loading Wikipedia information...</Block>;
+    if (this.state.isLoading) return <Block className="loading mb-2">Loading Wikipedia information...</Block>;
 
-    if (this.state.noInfoFound) return <Block className="no-info">No Wikipedia information found.</Block>;
+    if (this.state.noInfoFound) return <Block className="no-info mb-2">No Wikipedia information found.</Block>;
 
     return (
       <>
-        <BlockTitle>
-          <Link external target="_blank" href={`https://de.wikipedia.org/wiki/${this.state.title}`}>
-            {this.state.title} <Icon f7="link" size={12} />
+        <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
+        <BlockTitle className="mt-0 mb-1">
+          <Link
+            external
+            className="fs-2"
+            style={{ display: "block", maxWidth: "fit-content" }}
+            target="_blank"
+            href={`https://de.wikipedia.org/wiki/${this.state.title}`}
+          >
+            {this.state.title}{" "}
+            <img src="/img/Wikipedia.ico" style={{ height: "16px", width: "16px", margin: "0 0 -2px 0.1rem" }} />
           </Link>
         </BlockTitle>
-        <Block>{this.state.description}</Block>
-        <Block>{this.state.image && <img src={this.state.image} style={{ maxWidth: "100%" }} />}</Block>
+        <Block className="font-light mb-0 overflow-auto" style={{ textAlign: "left" }}>
+          {this.state.image && (
+            <img src={this.state.image} style={{ maxWidth: "45%", float: "right", marginLeft: "12px" }} />
+          )}
+          {this.state.description}
+        </Block>
       </>
     );
   }
