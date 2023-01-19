@@ -208,13 +208,13 @@ class WikiInfo extends React.Component {
   render() {
     if (this.state.noPlaceGiven) return null;
 
-    if (this.state.isLoading) return <Block className="loading">Loading Wikipedia information...</Block>;
+    if (this.state.isLoading) return <Block className="loading mb-2">Loading Wikipedia information...</Block>;
 
-    if (this.state.noInfoFound) return <Block className="no-info">No Wikipedia information found.</Block>;
+    if (this.state.noInfoFound) return <Block className="no-info mb-2">No Wikipedia information found.</Block>;
 
     return (
       <>
-        <BlockTitle className="mt-0">
+        <BlockTitle className="mt-0 mb-1">
           <Link
             external
             className="fs-2"
@@ -226,7 +226,7 @@ class WikiInfo extends React.Component {
             <img src="/img/Wikipedia.ico" style={{ height: "16px", width: "16px", margin: "0 0 -2px 0.1rem" }} />
           </Link>
         </BlockTitle>
-        <Block className="font-light" style={{ textAlign: "justify" }}>
+        <Block className="font-light mb-0 overflow-auto" style={{ textAlign: "left" }}>
           {this.state.image && (
             <img src={this.state.image} style={{ maxWidth: "45%", float: "right", marginLeft: "12px" }} />
           )}
