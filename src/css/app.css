@@ -124,8 +124,8 @@
   border-radius: 0.85rem;
   font-size: var(--f7-button-font-size);
   font-weight: normal;
-  border: 1px solid white;
-  color: white;
+  border: 1px solid var(--f7-theme-color);
+  color: var(--f7-theme-color);
   text-transform: none;
 }
 .ios .google-maps-button {
@@ -135,7 +135,6 @@
 .impressum-button {
   width: fit-content;
   margin: 0 auto 2rem auto !important;
-  padding: 0 var(--f7-button-padding-horizontal);
   border-radius: 0.9rem;
   font-weight: normal;
   border: 1px solid white;
@@ -228,11 +227,17 @@
 .mt-0 {
   margin-top: 0;
 }
+.mt-2 {
+  margin-top: 1rem;
+}
 .mb-0 {
   margin-bottom: 0;
 }
 .mb-1 {
   margin-bottom: 0.25rem;
+}
+.mb-2 {
+  margin-bottom: 1rem;
 }
 
 .fs-2 {
@@ -253,4 +258,8 @@
 }
 .pointer-all {
   pointer-events: all;
+}
+
+.overflow-auto {
+  overflow: auto;
 }

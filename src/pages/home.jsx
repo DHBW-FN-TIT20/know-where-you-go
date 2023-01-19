@@ -597,7 +597,9 @@ class Home extends React.Component {
               </Block>
               <BlockTitle className="font-light mb-0">von Wikipedia:</BlockTitle>
               <WikiInfo place={this.state.place} />
-              <Button outline href="/impressum" text="Impressum" className="impressum-button"></Button>
+              <Block className="mt-2">
+                <Button outline href="/impressum" text="Impressum" className="impressum-button"></Button>
+              </Block>
             </div>
           }
         />
