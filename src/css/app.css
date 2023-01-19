@@ -231,9 +231,12 @@
   margin-top: 0;
 }
 .mt-1 {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 .mt-2 {
+  margin-top: 1rem;
+}
+.mt-3 {
   margin-top: 3rem;
 }
 .mb-0 {

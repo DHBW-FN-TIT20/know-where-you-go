@@ -21,11 +21,10 @@ import L from "leaflet";
 import "leaflet-routing-machine";
 import MapCredits from "../components/MapCredits";
 
-const SEARCH_BAR_HEIGHT = 70;
-
 class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.searchBarHeight = 70;
     this.state = {
       currentLocation: {
         lat: 47.665575312188025,
@@ -35,7 +34,7 @@ class Home extends React.Component {
       snapSheetToState: 1,
       searchText: "",
       place: {},
-      mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
+      mapHeight: window.innerHeight - this.searchBarHeight,
       selectedCoords: { lat: undefined, lng: undefined },
       searchSuggestions: [],
       lastVisitedPlaces: getObjectFromLocalStorage("lastVisitedPlaces") || [],
@@ -45,11 +44,7 @@ class Home extends React.Component {
       routingTime: 0,
       showRoutingDistanceAndDuration: false,
       tileLayerStyle: "map",
-      sheetHeightStates: [
-        SEARCH_BAR_HEIGHT,
-        window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
-        window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
-      ],
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - 64],
     };
     this.currentLocationActive = true;
     this.dontUpdateButton = true;
@@ -107,17 +102,22 @@ class Home extends React.Component {
     }, 5000);
 
     // eventlistener on resize to update the sheetHeightStates
-    window.addEventListener("resize", () => {
-      this.setState({
-        mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
-        sheetHeightStates: [
-          SEARCH_BAR_HEIGHT,
-          window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
-          window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
-        ],
-      });
-    });
+    window.addEventListener("resize", this.handleScreenChange);
+    window.addEventListener("orientationchange", this.handleScreenChange);
   }
+
+  /**
+   * event listener for handling both the resize and orientationchange events
+   * @returns {null}
+   */
+  handleScreenChange = () => {
+    let notchOffset = 40;
+    this.setState({
+      mapHeight: window.innerHeight - this.searchBarHeight,
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + notchOffset)],
+      snapSheetToState: 0,
+    });
+  };
 
   /**
    * Search for a place by text or coordinates
@@ -478,7 +478,7 @@ class Home extends React.Component {
           }
           topBar={
             <Searchbar
-              style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
+              style={{ height: this.searchBarHeight, margin: 0 }}
               value={this.state.searchText}
               onFocus={e => {
                 if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
