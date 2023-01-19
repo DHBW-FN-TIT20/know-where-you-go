@@ -15,11 +15,14 @@ Know-Where-You-Go ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie si
 # &#128270; Features
 
 - Bekomme Informationen über jeden Ort mithilfe von [Wikipedia](https://de.wikipedia.org)
-- Anzeigen deines aktuellen Standortes mit reverse geocoding mithilfe von [OpenStreetMap](https://www.openstreetmap.de)
-- Lass dir die schnellsten Routen zu einem Ort deiner Wahl zeigen
+- Finde heraus wo du dich aktuell befindest mithilfe von [OpenStreetMap](https://www.openstreetmap.de)
+- Lass dir die schnellsten Routen zu einem Ort deiner Wahl zeigen und öffne sie in [GoogleMaps](https://www.google.de/maps/preview)
+- Lass die beim suchen von Länder, Regionen und Städten deren genauen Grenzen anzeigen
 - Kann auf jedem Endgerät installiert werden
 - Selbst ohne Internetzugang kannst du deine letzten Inhalte sehen
-- Hoste die Anwendung auf deinem eigenem Server mit Docker 
+- Hoste die Anwendung auf deinem eigenem Server mit Docker
+
+Weitere Technische Deatails / Highlight findest du [hier](#-technische-details-und-highlights)
 
 # &#128051; Deploy mit Docker
 
@@ -76,6 +79,13 @@ npm run build
 ```
 
 Die Daten befinden sich im Ordner `www`.
+
+# &#128270; Technische Details und Highlights
+- Automatische vervollständigung deiner suche abhängig von deinem aktuellen Standort
+- Verschiedene Kartenansichten ( "Map" und "Satellite" )
+- Speicherung der zuletzt besuchten Orte
+- Zoomgrad wird beim Reverse Geocoding zu jederzeit berücksichtigt
+- Recursive suche der Wikipediainformationen bis passende Informationen zum Ort gefunden wurden
 
 # &#129299; Entwickler
  
