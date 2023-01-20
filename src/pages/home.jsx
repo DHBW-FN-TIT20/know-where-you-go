@@ -115,7 +115,7 @@ class Home extends React.Component {
     this.setState({
       mapHeight: window.innerHeight - this.searchBarHeight,
       sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + this.notchOffset)],
-      snapSheetToState: 0,
+      snapSheetToState: 2,
     });
   };
 
