@@ -10,19 +10,24 @@
 
 ![Website](https://img.shields.io/website?up_color=green&up_message=online&url=https%3A%2F%2Fknow-where-you-go.de) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/DHBW-FN-TIT20/know-where-you-go)
 
-Know-Where-You-Go ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie sind und wohin Sie gehen.
+[Know-Where-You-Go](https://know-where-you-go.de) ist eine Webanwendung die Ihnen hilft herauszufinden wo Sie sind und wohin Sie gehen.
 
 # &#128270; Features
 
 - Bekomme Informationen über jeden Ort mithilfe von [Wikipedia](https://de.wikipedia.org)
 - Finde heraus wo du dich aktuell befindest mithilfe von [OpenStreetMap](https://www.openstreetmap.de)
 - Lass dir die schnellsten Routen zu einem Ort deiner Wahl zeigen und öffne sie in [GoogleMaps](https://www.google.de/maps/preview)
-- Lass die beim suchen von Länder, Regionen und Städten deren genauen Grenzen anzeigen
+- Lass die beim Suchen von Länder, Regionen und Städten deren genauen Grenzen anzeigen
 - Kann auf jedem Endgerät installiert werden
 - Selbst ohne Internetzugang kannst du deine letzten Inhalte sehen
 - Hoste die Anwendung auf deinem eigenem Server mit Docker
 
-Weitere Technische Details / Highlights findest du [hier](#-technische-details-und-highlights)
+# &#128270; Technische Details und Highlights
+- Automatische Vervollständigung der Suche abhängig von deinem aktuellen Standort
+- Verschiedene Kartenansichten ( "Map" und "Satellite" )
+- Speicherung der zuletzt besuchten Orte
+- Der aktuelle Zoomgrad der Karte wird beim Reverse Geocoding zu jederzeit berücksichtigt
+- Recursive Suche der Wikipediainformationen bis passende Informationen zum Ort gefunden wurden
 
 # &#128051; Deploy mit Docker
 
@@ -63,7 +68,7 @@ Unter Linux kann folgender Befehl eingegeben werden:
 tar -xzvf release.tar.gz
 ```
 
-Die Daten im Ordner `www` können nun mit einem Beliebigen Server wie z.B. [Apache](https://httpd.apache.org) bereitgestellt werden.
+Die Daten im Ordner `www` können nun mit einem beliebigen Server wie z.B. [Apache](https://httpd.apache.org) bereitgestellt werden.
 
 # &#128736; Bauen der Anwendung
 Es kann der `www` Ordner auch selbst gebaut werden.
@@ -80,17 +85,10 @@ npm run build
 
 Die Daten befinden sich im Ordner `www`.
 
-# &#128270; Technische Details und Highlights
-- Automatische vervollständigung deiner suche abhängig von deinem aktuellen Standort
-- Verschiedene Kartenansichten ( "Map" und "Satellite" )
-- Speicherung der zuletzt besuchten Orte
-- Zoomgrad wird beim Reverse Geocoding zu jederzeit berücksichtigt
-- Recursive suche der Wikipediainformationen bis passende Informationen zum Ort gefunden wurden
-
 # &#129299; Entwickler
  
 - [Henry Schuler](https://github.com/schuler-henry)
-- [Florian Herrkommer](https://github.com/Floqueboque) 
+- [Florian Herkommer](https://github.com/Floqueboque) 
 - [Florian Glaser](https://github.com/Floskinner)
 - [Baldur Siegel](https://github.com/baldur132)
 - [Johannes Brandenburger](https://github.com/johannesbrandenburger)
