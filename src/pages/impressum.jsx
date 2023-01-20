@@ -9,73 +9,102 @@ class Impressum extends React.Component {
   render() {
     return (
       <Page name="Impressum">
-        <Link back iconOnly iconF7="arrow_left"></Link>
-        <BlockTitle>
-          <h1>About Know-Where-You-Go</h1>
-        </BlockTitle>
-        <Block strong>
+        <Block className="mt-2 mb-1">
+          <Link back iconF7="arrow_left" iconSize={20} style={{ fontSize: "20px" }}>
+            &nbsp;Zur&uuml;ck
+          </Link>
+        </Block>
+        <Block className="mt-1 mb-1">
+          <img src="/img/KWYGLogo.svg" style={{ maxWidth: "100%", transition: "inherit" }}></img>
+        </Block>
+        <Block strong className="mt-1">
           <p>
             {" "}
             Know-Where-You-Go ist eine Webanwendung, die Ihnen hilft, herauszufinden, wo Sie sind und wohin Sie gehen.
           </p>
           <p>
-            Es basiert auf dem <Link href="https://www.openstreetmap.org/">OpenStreetMap-Projekt</Link> und verwendet
-            die <Link href="https://www.openstreetmap.org/">OpenStreetMap-API</Link>, um die Daten zu erhalten.
+            Sie basiert auf dem{" "}
+            <Link external target="_blank" href="https://www.openstreetmap.org/">
+              OpenStreetMap-Projekt
+            </Link>{" "}
+            und verwendet die{" "}
+            <Link external target="_blank" href="https://www.openstreetmap.org/wiki/API">
+              OpenStreetMap-API
+            </Link>
+            , um die Daten zu erhalten.
           </p>
           <p>
             Die Anwendung ist open source und kann auf{" "}
-            <Link href="https://github.com/DHBW-FN-TIT20/know-where-you-go">GitHub</Link> gefunden werden.
+            <Link external target="_blank" href="https://github.com/DHBW-FN-TIT20/know-where-you-go">
+              GitHub
+            </Link>{" "}
+            gefunden werden.
           </p>
           <p>Die App wird von Studenten der DHBW Friedrichshafen entwickelt:</p>
           <ul>
             <li>
-              <Link href="https://github.com/baldur132">Baldur Siegel</Link>
+              <Link external target="_blank" href="https://github.com/johannesbrandenburger">
+                Johannes Brandenburger
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/schuler-henry">Henry Schuler</Link>
+              <Link external target="_blank" href="https://github.com/lukasbraundev">
+                Lukas Braun
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/Floqueboque">Florian Herkommer</Link>
+              <Link external target="_blank" href="https://github.com/screetox">
+                David Felder
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/Floskinner">Florian Glaser</Link>
+              <Link external target="_blank" href="https://github.com/Floskinner">
+                Florian Glaser
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/johannesbrandenburger">Johannes Brandenburger</Link>
+              <Link external target="_blank" href="https://github.com/Floqueboque">
+                Florian Herkommer
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/screetox">David Felder</Link>
+              <Link external target="_blank" href="https://github.com/PhillippPatzelt">
+                Phillipp Patzelt
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/lukasbraundev">Lukas Braun</Link>
+              <Link external target="_blank" href="https://github.com/schuler-henry">
+                Henry Schuler
+              </Link>
             </li>
             <li>
-              <Link href="https://github.com/PhillippPatzelt">Phillipp Patzelt</Link>
+              <Link external target="_blank" href="https://github.com/baldur132">
+                Baldur Siegel
+              </Link>
             </li>
           </ul>
         </Block>
-        <BlockTitle>
-          <h1>Impressum</h1>
-        </BlockTitle>
-        <BlockTitle>
-          <h2>Kontakt</h2>
-        </BlockTitle>
+        <BlockTitle large>Impressum</BlockTitle>
+        <BlockTitle medium>Kontakt</BlockTitle>
         <Block strong>
           <p>Angaben gemäß § 5 TMG</p>
           <p>
             Florian Glaser<br></br>
+            Duale Hochschule Baden-Württemberg Ravensburg<br></br>
+            Campus Friedrichshafen<br></br>
           </p>
           <p>
             Fallenbrunnen 2<br></br>
             88045 Friedrichshafen<br></br>
-            Telefon: 49-123456789
+            Telefon: +49 751 18999 2700
           </p>
           E-Mail:{" "}
-          <a href="mailto: glaser.florian-it20@it.dhbw-ravensburg.de">glaser.florian-it20@it.dhbw-ravensburg.de</a>
+          <Link external target="_blank" href="mailto:glaser.florian-it20@it.dhbw-ravensburg.de">
+            {" "}
+            glaser.florian-it20@it.dhbw-ravensburg.de
+          </Link>
         </Block>
-        <BlockTitle>
-          <h2>Haftungsausschluss:</h2>
-        </BlockTitle>
+        <BlockTitle medium>Haftungsausschluss</BlockTitle>
         <Block strong>
           <h3>Haftung für Inhalte</h3>
           <p>
@@ -99,28 +128,8 @@ class Impressum extends React.Component {
             jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von
             Rechtsverletzungen werden wir derartige Links umgehend entfernen.
           </p>
-          <h3>Urheberrecht</h3>
-          <p>
-            Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen
-            Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der
-            Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
-            Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit
-            die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet.
-            Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine
-            Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von
-            Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
-          </p>
         </Block>
-        <Block>
-          {/* // prettier-ignore */}
-          Website Impressum erstellt durch <Link href="https://www.impressum-generator.de">
-            impressum-generator.de
-          </Link>{" "}
-          von der{" "}
-          <Link href="https://www.kanzlei-hasselbach.de/" rel="nofollow">
-            Kanzlei Hasselbach
-          </Link>
-        </Block>
+        <Block className="font-light text-center">&#169; FKW Software Solutions, 2022</Block>
       </Page>
     );
   }

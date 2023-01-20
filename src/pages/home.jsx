@@ -1,22 +1,31 @@
+/* eslint-disable max-len */
 import React from "react";
-import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Icon } from "framework7-react";
+import { Page, Searchbar, List, BlockTitle, Button, ListItem, BlockHeader, Block, Link } from "framework7-react";
 import { MapContainer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import SnappingSheet from "../components/SnappingSheet";
 import LocationMarker from "../components/LocationMarker";
 import AccuracyCircle from "../components/AccuracyCircle";
 import OutlinePolygon from "../components/OutlinePolygon";
-import { getPlaceByNominatimData, getCoordsFromSearchText } from "../js/helpers";
+import {
+  getPlaceByNominatimData,
+  getCoordsFromSearchText,
+  saveObjectToLocalStorage,
+  getObjectFromLocalStorage,
+  formatAddressObject,
+  findHumanPlaceName,
+} from "../js/helpers";
 import WikiInfo from "../components/WikiInfo";
 import MemoFetcher from "../js/memo-fetcher";
 import L from "leaflet";
 import "leaflet-routing-machine";
-
-const SEARCH_BAR_HEIGHT = 70;
+import MapCredits from "../components/MapCredits";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.searchBarHeight = 70;
+    this.notchOffset = 40;
     this.state = {
       currentLocation: {
         lat: 47.665575312188025,
@@ -26,24 +35,23 @@ class Home extends React.Component {
       snapSheetToState: 1,
       searchText: "",
       place: {},
-      mapHeight: window.innerHeight - SEARCH_BAR_HEIGHT,
+      mapHeight: window.innerHeight - this.searchBarHeight,
       selectedCoords: { lat: undefined, lng: undefined },
       searchSuggestions: [],
+      lastVisitedPlaces: getObjectFromLocalStorage("lastVisitedPlaces") || [],
       showSearchSuggestions: false,
       showRouting: true,
       routingDistance: 0,
       routingTime: 0,
       showRoutingDistanceAndDuration: false,
       tileLayerStyle: "map",
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + this.notchOffset)],
     };
-    this.sheetHeightStates = [
-      SEARCH_BAR_HEIGHT,
-      window.innerHeight * 0.25 + SEARCH_BAR_HEIGHT,
-      window.innerHeight * 0.8 + SEARCH_BAR_HEIGHT,
-    ];
+    this.currentLocationActive = true;
+    this.dontUpdateButton = true;
     this.suggestionTimeout = undefined;
     this.mapNeedsUpdate = false;
-    this.mapSlowAnimation = true;
+    this.initialAnimation = true;
     this.routingNeedsUpdate = false;
     this.tileLayerNeedsUpdate = true;
     this.mapZoom = 4;
@@ -70,12 +78,20 @@ class Home extends React.Component {
           accuracy: position.coords.accuracy,
         },
       });
-      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18, true);
+      this.updatePlaceByCoords({ lat: position.coords.latitude, lng: position.coords.longitude }, 18, true, false);
     });
 
     // update the current location every 5 seconds
     this.currentLocationInterval = setInterval(() => {
       navigator.geolocation.getCurrentPosition(position => {
+        if (
+          this.currentLocationActive &&
+          (Math.abs(position.coords.latitude - this.mapCenter.lat) > 0.0001 ||
+            Math.abs(position.coords.longitude - this.mapCenter.lng) > 0.0001)
+        ) {
+          this.mapNeedsUpdate = true;
+          this.mapCenter = { lat: position.coords.latitude, lng: position.coords.longitude };
+        }
         this.setState({
           currentLocation: {
             lat: position.coords.latitude,
@@ -85,7 +101,23 @@ class Home extends React.Component {
         });
       });
     }, 5000);
+
+    // eventlistener on resize to update the sheetHeightStates
+    window.addEventListener("resize", this.handleScreenChange);
+    window.addEventListener("orientationchange", this.handleScreenChange);
   }
+
+  /**
+   * event listener for handling both the resize and orientationchange events
+   * @returns {null}
+   */
+  handleScreenChange = () => {
+    this.setState({
+      mapHeight: window.innerHeight - this.searchBarHeight,
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + this.notchOffset)],
+      snapSheetToState: 0,
+    });
+  };
 
   /**
    * Search for a place by text or coordinates
@@ -119,7 +151,7 @@ class Home extends React.Component {
       showSearchSuggestions: false,
       showRouting: true,
     });
-    console.log(this.state);
+    this.addPlaceToLastVisited(place);
   };
 
   /**
@@ -127,7 +159,7 @@ class Home extends React.Component {
    * @param {{lat: number, lng: number}} coords
    * @param {number} zoom
    */
-  updatePlaceByCoords = async (coords, zoom, updateMap = false) => {
+  updatePlaceByCoords = async (coords, zoom, updateMap = false, updatePin = true) => {
     if (updateMap) {
       this.mapNeedsUpdate = true;
       this.mapZoom = zoom;
@@ -136,10 +168,11 @@ class Home extends React.Component {
         lng: coords.lng,
       };
     }
-    this.setState({
-      snapSheetToState: 1,
-      selectedCoords: coords,
-    });
+    this.setState({ snapSheetToState: 1 });
+    // to prevent updating pin when initially opening the map, otherwise do it
+    if (updatePin) {
+      this.setState({ selectedCoords: coords });
+    }
     const place = await this.getPlaceByCoords(coords, zoom);
     this.setState({
       place: place,
@@ -206,7 +239,11 @@ class Home extends React.Component {
    */
   updateSearchSuggestions = async searchText => {
     if (searchText.trim().length < 3) {
-      this.setState({ searchSuggestions: [] });
+      this.setState({
+        searchSuggestions: this.state.lastVisitedPlaces.map(place => {
+          return { displayName: place.name, osmID: place.osmId };
+        }),
+      });
       return;
     }
     clearTimeout(this.suggestionTimeout);
@@ -225,7 +262,7 @@ class Home extends React.Component {
         };
         return placeData;
       });
-      this.setState({ searchSuggestions });
+      if (this.state.searchText === searchText) this.setState({ searchSuggestions });
     }, 200);
   };
 
@@ -243,10 +280,38 @@ class Home extends React.Component {
    * @returns {void}
    */
   goBackToCurrentLocation = () => {
+    //check if we are already at our current location
+    if (this.currentLocationActive) {
+      return;
+    }
     this.mapNeedsUpdate = true;
     this.mapCenter = this.state.currentLocation;
     this.mapZoom = 18;
     this.setState({ snapSheetToState: 0 });
+    this.currentLocationButton = document.getElementById("currentLocationButton");
+    this.currentLocationButton.classList.remove("bi-cursor");
+    this.currentLocationButton.classList.add("bi-cursor-fill");
+    this.currentLocationActive = true;
+    this.dontUpdateButton = true;
+  };
+
+  /**
+   * Adds a place to the last visited places (so that the this.state.lastVisitedPlaces array is not longer than 5)
+   * @param {Object} place
+   * @returns {void}
+   */
+  addPlaceToLastVisited = place => {
+    const lastVisitedPlaces = this.state.lastVisitedPlaces;
+
+    // remove the place if it is already in the array
+    const index = lastVisitedPlaces.findIndex(p => p.osmId === place.osmId);
+    if (index !== -1) lastVisitedPlaces.splice(index, 1);
+
+    // add the place to the beginning of the array and remove the last element if the array is longer than 5
+    lastVisitedPlaces.unshift(place);
+    if (lastVisitedPlaces.length > 5) lastVisitedPlaces.pop();
+    saveObjectToLocalStorage("lastVisitedPlaces", lastVisitedPlaces);
+    this.setState({ lastVisitedPlaces });
   };
 
   /**
@@ -258,14 +323,24 @@ class Home extends React.Component {
 
     // set the center of the map to this.state.mapCenter (but let the user move it)
     if (this.mapNeedsUpdate) {
-      map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.mapSlowAnimation ? 4 : 1 });
+      map.flyTo(this.mapCenter, this.mapZoom, { animate: true, duration: this.initialAnimation ? 4 : 1 });
       this.mapNeedsUpdate = false;
-      this.mapSlowAnimation = false;
+      this.initialAnimation = false;
     }
 
     useMapEvents({
       click: event => {
         this.updatePlaceByCoords(event.latlng, this.mapZoom);
+      },
+      movestart: () => {
+        if (this.dontUpdateButton) {
+          this.dontUpdateButton = false;
+        } else {
+          this.currentLocationButton = document.getElementById("currentLocationButton");
+          this.currentLocationButton.classList.remove("bi-cursor-fill");
+          this.currentLocationButton.classList.add("bi-cursor");
+          this.currentLocationActive = false;
+        }
       },
       zoom: () => {
         this.mapZoom = map.getZoom();
@@ -284,6 +359,7 @@ class Home extends React.Component {
           : "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
         {
           attribution: this.state.tileLayerStyle === "satellite" ? "Tiles &copy; Esri" : "Tiles &copy; OpenStreetMap",
+          noWrap: true,
         },
       ).addTo(map);
       this.tileLayerNeedsUpdate = false;
@@ -315,7 +391,7 @@ class Home extends React.Component {
       fitSelectedRoutes: false,
       draggableWaypoints: false,
       lineOptions: {
-        styles: [{ color: "blue", opacity: 1, weight: 2 }],
+        styles: [{ color: "#235cb2", opacity: 0.8, weight: 4 }],
         extendToWaypoints: true,
         missingRouteTolerance: 0,
       },
@@ -344,14 +420,6 @@ class Home extends React.Component {
   };
 
   render() {
-    // address object -> string
-    let address = "";
-    if (this.state.place.address !== undefined) {
-      Object.values(this.state.place.address).forEach(value => {
-        if (value !== undefined && value !== "") address += value + ", ";
-      });
-    }
-
     return (
       <Page name="home">
         <MapContainer
@@ -362,6 +430,12 @@ class Home extends React.Component {
           touchZoom={true}
           zoomControl={false}
           id="map"
+          maxBoundsViscosity={1.0}
+          maxBounds={[
+            [90, 180],
+            [-90, -180],
+          ]}
+          minZoom={2}
         >
           <AccuracyCircle
             center={{ lat: this.state.currentLocation.lat, lng: this.state.currentLocation.lng }}
@@ -369,61 +443,70 @@ class Home extends React.Component {
             visible={this.state.currentLocation.accuracy !== 0}
           />
           <LocationMarker
-            iconUrl={"img/OwnLocationMarker.png"}
+            iconUrl={"img/UserLocationMarker.png"}
             position={this.state.currentLocation}
             visible={this.state.currentLocation.accuracy !== 0}
-            size={{ width: 20, height: 20 }}
+            size={{ width: 24, height: 24 }}
           />
           <LocationMarker
-            iconUrl={"img/LocationMarker.png"}
+            iconUrl={"img/TargetLocationMarker.png"}
             position={this.state.selectedCoords}
-            visible={this.state.selectedCoords !== undefined}
-            size={{ width: 40, height: 40 }}
-            anchor={{ x: 20, y: 40 }}
+            visible={this.state.selectedCoords.lat !== undefined}
+            size={{ width: 36, height: 36 }}
+            anchor={{ x: 18, y: 36 }}
           />
           <this.MapHook />
           <OutlinePolygon placeName={this.state.place.name} />
         </MapContainer>
 
-        <Button
-          fill
-          className="map-button"
-          onClick={this.toggleTileLayer}
-          style={{ top: window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
-        >
-          <Icon f7={this.state.tileLayerStyle === "satellite" ? "map" : "map_fill"} />
-        </Button>
-        <Button
-          fill
-          className="map-button"
-          onClick={this.goBackToCurrentLocation}
-          style={{ top: 50 + window.innerHeight - this.sheetHeightStates[this.sheetHeightStates.length - 1] + "px" }}
-        >
-          <Icon f7="location_fill" />
-        </Button>
-
         <SnappingSheet
-          snapHeightStates={this.sheetHeightStates}
+          snapHeightStates={this.state.sheetHeightStates}
           currentState={this.state.snapSheetToState}
           snappedToHeight={() => this.setState({ snapSheetToState: undefined })}
+          outBar={
+            <div className="out-bar">
+              <MapCredits tileProvider={this.state.tileLayerStyle === "satellite" ? "Esri" : "OpenStreetMap"} />
+              <div className="map-button-wrapper pointer-all">
+                <Button fill className="map-button" onClick={this.toggleTileLayer}>
+                  <span
+                    className={this.state.tileLayerStyle === "satellite" ? "bi bi-map-fill" : "bi bi-map"}
+                    style={{ fontSize: "24px", width: "24px" }}
+                  />
+                </Button>
+                <Button fill className="map-button" onClick={this.goBackToCurrentLocation}>
+                  <span
+                    className="bi bi-cursor-fill"
+                    id="currentLocationButton"
+                    style={{ fontSize: "24px", width: "24px" }}
+                  />
+                </Button>
+              </div>
+            </div>
+          }
           topBar={
             <Searchbar
-              style={{ height: SEARCH_BAR_HEIGHT, margin: 0 }}
+              style={{ height: this.searchBarHeight, margin: 0 }}
               value={this.state.searchText}
               onFocus={e => {
+                if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+                  this.setState({ snapSheetToState: 2 });
+                  this.updateSearchSuggestions(e.target.value);
+                  return;
+                }
                 if (this.focusOnSearchBar) {
                   this.focusOnSearchBar = false;
                   return;
                 }
                 e.target.blur();
                 this.focusOnSearchBar = true;
+                this.setState({ snapSheetToState: 2 });
+                this.updateSearchSuggestions(e.target.value);
                 e.target.focus({ preventScroll: true });
-                this.setState({ snapSheetToState: 2, showSearchSuggestions: true });
               }}
-              placeholder="Place, address, or coordinates (lat, lng)"
-              onChange={event => {
-                this.setState({ searchText: event.target.value, showSearchSuggestions: true });
-                this.updateSearchSuggestions(event.target.value);
+              placeholder="Ort, Adresse oder Koordinaten (lat, lng)"
+              onChange={e => {
+                this.setState({ searchText: e.target.value, showSearchSuggestions: true });
+                this.updateSearchSuggestions(e.target.value);
               }}
               onSubmit={() => {
                 document.getElementById("map")?.focus({ preventScroll: true }); // focus on map to hide keyboard
@@ -439,7 +522,7 @@ class Home extends React.Component {
           }
           scrollArea={
             <div id="scroll-area">
-              <List>
+              <List className="mt-0" style={{ display: this.state.showSearchSuggestions ? "block" : "none" }}>
                 {this.state.showSearchSuggestions &&
                   this.state.searchSuggestions.map((suggestion, index) => {
                     return (
@@ -455,39 +538,55 @@ class Home extends React.Component {
                     );
                   })}
               </List>
-              <BlockTitle medium>{this.state.place.name}</BlockTitle>
-              <BlockTitle style={{ display: this.state.showRoutingDistanceAndDuration ? "block" : "none" }}>
-                {Math.round(this.state.routingDistance / 1000)} km,{" "}
-                {this.state.routingTime > 3600
-                  ? Math.round(this.state.routingTime / 3600) +
-                    " h " +
-                    Math.round((this.state.routingTime % 3600) / 60) +
-                    " min"
-                  : Math.round(this.state.routingTime / 60) + " min"}
+              <BlockTitle large className="mt-0 mb-1">
+                {findHumanPlaceName(this.state.place.name)}
               </BlockTitle>
-              <BlockHeader>{address}</BlockHeader>
+              <BlockHeader>{formatAddressObject(this.state.place.address)}</BlockHeader>
+              <Block
+                medium
+                className="route-wrapper"
+                style={{ display: this.state.showRoutingDistanceAndDuration ? "flex" : "none" }}
+              >
+                <div className="route-left">
+                  <span className="time font-bold fs-4">
+                    {this.state.routingTime > 3600
+                      ? Math.round(this.state.routingTime / 3600) +
+                        " Std. " +
+                        Math.round((this.state.routingTime % 3600) / 60) +
+                        " Min."
+                      : Math.round(this.state.routingTime / 60) + " Minuten"}
+                  </span>
+                  <span className="font-light fs-3">von aktueller Position</span>
+                </div>
+                <div className="route-right fs-3">
+                  <span className="font-light">
+                    {Math.round(this.state.routingDistance / 1000)} km{""}
+                  </span>
+                  <Link
+                    outline
+                    external
+                    style={{ margin: "0 0.8rem", display: "unset" }}
+                    className="google-maps-button"
+                    target="_blank"
+                    href={
+                      "https://www.google.com/maps/dir/?api=1&origin=" +
+                      this.state.currentLocation.lat +
+                      "%2C" +
+                      this.state.currentLocation.lng +
+                      "&destination=" +
+                      this.state.selectedCoords.lat +
+                      "%2C" +
+                      this.state.selectedCoords.lng
+                    }
+                  >
+                    Google Maps
+                  </Link>
+                </div>
+              </Block>
               <WikiInfo place={this.state.place} />
-              <Button
-                round
-                outline
-                external
-                target="_blank"
-                href={
-                  "https://www.google.com/maps/search/?api=1&query=" +
-                  this.state.selectedCoords.lat +
-                  "%2C" +
-                  this.state.selectedCoords.lng
-                }
-                text="G-Maps"
-                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
-              ></Button>
-              <Button
-                round
-                outline
-                href="/impressum"
-                text="Impressum"
-                style={{ width: "fit-content", margin: "0 auto 2rem auto" }}
-              ></Button>
+              <Block className="mt-1">
+                <Button outline href="/impressum" text="Impressum" className="impressum-button"></Button>
+              </Block>
             </div>
           }
         />

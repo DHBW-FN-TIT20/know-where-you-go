@@ -1,3 +1,4 @@
+import { Button } from "framework7-react";
 import React from "react";
 
 class SnappingSheet extends React.Component {
@@ -81,6 +82,7 @@ class SnappingSheet extends React.Component {
       });
       this.currentState = this.props.currentState;
       this.props.snappedToHeight(this.props.snapHeightStates[this.props.currentState]);
+      this.changeSwipeButtonIcon(this.currentState);
     }
   }
 
@@ -141,6 +143,7 @@ class SnappingSheet extends React.Component {
 
     this.props.snappedToHeight(closestSheetHeightState);
     this.currentState = this.props.snapHeightStates.indexOf(closestSheetHeightState);
+    this.changeSwipeButtonIcon(this.currentState);
 
     // scroll the scroll area to the top with a animation if the sheet is not completely open
     if (this.currentState !== this.props.snapHeightStates.length - 1) {
@@ -155,7 +158,6 @@ class SnappingSheet extends React.Component {
   dragOnScrollAreaStart = event => {
     // check if the scroll area is scrolled to the top only then start the dragging process
     if (this.currentState == this.props.snapHeightStates.length - 1 && this.scrollAreaScrollTop > 0) {
-      console.log("scrolling");
       return;
     }
 
@@ -216,33 +218,85 @@ class SnappingSheet extends React.Component {
     this.dragStartPositionY = dragStartPositionY;
   };
 
+  /**
+   * Handles the movement of the sheet with a button on desktop view
+   */
+  handleButtonSheetMove = () => {
+    switch (this.currentState) {
+      case 1:
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[2] });
+        this.props.snappedToHeight(this.props.snapHeightStates[2]);
+        this.currentState = 2;
+        this.changeSwipeButtonIcon(this.currentState);
+        break;
+      case 2:
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[0] });
+        this.props.snappedToHeight(this.props.snapHeightStates[0]);
+        this.currentState = 0;
+        this.changeSwipeButtonIcon(this.currentState);
+        break;
+      default:
+        // transition to the new sheet height
+        this.setState({ sheetHeightTransitionStyle: "0.3s ease-out", sheetHeight: this.props.snapHeightStates[2] });
+        this.props.snappedToHeight(this.props.snapHeightStates[2]);
+        this.currentState = 2;
+        this.changeSwipeButtonIcon(this.currentState);
+        break;
+    }
+  };
+
+  /**
+   * Changes the icon of the swipe button to fit the current state
+   * @param { int } state
+   */
+  changeSwipeButtonIcon = state => {
+    switch (state) {
+      case 1:
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        break;
+      case 2:
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-up");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-down");
+        break;
+      default:
+        document.getElementById("swipeButton")?.classList.remove("bi-chevron-down");
+        document.getElementById("swipeButton")?.classList.add("bi-chevron-up");
+        break;
+    }
+  };
+
   render() {
     return (
-      <div
-        ref={this.dragAreaRef}
-        style={{
-          height: this.state.sheetHeight,
-          transition: this.state.sheetHeightTransitionStyle,
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-        }}
-      >
-        <div ref={this.topBarRef}>{this.props.topBar}</div>
+      <div className="snapping-sheet pointer-none">
+        <div className="">{this.props.outBar}</div>
         <div
-          ref={this.scrollAreaRef}
+          ref={this.dragAreaRef}
+          className="primary-background pointer-all"
           style={{
-            height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
-            overflow: "scroll",
-          }}
-          className="grey-blur"
-          onScroll={e => {
-            this.scrollAreaScrollTop = e.target.scrollTop;
+            height: this.state.sheetHeight,
+            transition: this.state.sheetHeightTransitionStyle,
+            borderRadius: "var(--f7-searchbar-in-page-content-border-radius)",
           }}
         >
-          {this.props.scrollArea}
+          <Button fill className="swipe-button" onClick={this.handleButtonSheetMove}>
+            <span className="bi bi-chevron-up" id="swipeButton"></span>
+          </Button>
+          <div ref={this.topBarRef}>{this.props.topBar}</div>
+          <div
+            ref={this.scrollAreaRef}
+            style={{
+              height: `calc(100% - ${this.props.snapHeightStates[0]}px)`,
+              overflow: "auto",
+            }}
+            onScroll={e => {
+              this.scrollAreaScrollTop = e.target.scrollTop;
+            }}
+          >
+            {this.props.scrollArea}
+          </div>
         </div>
       </div>
     );
@@ -250,7 +304,8 @@ class SnappingSheet extends React.Component {
 }
 
 // define the types of the properties that are passed to the component
-SnappingSheet.prototype.props = /** @type { { 
+SnappingSheet.prototype.props = /** @type { {
+  outBar: React.ReactNode,
   topBar: React.ReactNode,
   scrollArea: React.ReactNode,
   snapHeightStates: number[],
