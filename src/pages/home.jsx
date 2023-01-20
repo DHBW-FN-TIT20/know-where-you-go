@@ -25,6 +25,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.searchBarHeight = 70;
+    this.notchOffset = 40;
     this.state = {
       currentLocation: {
         lat: 47.665575312188025,
@@ -44,7 +45,7 @@ class Home extends React.Component {
       routingTime: 0,
       showRoutingDistanceAndDuration: false,
       tileLayerStyle: "map",
-      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - 64],
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + this.notchOffset)],
     };
     this.currentLocationActive = true;
     this.dontUpdateButton = true;
@@ -111,10 +112,9 @@ class Home extends React.Component {
    * @returns {null}
    */
   handleScreenChange = () => {
-    let notchOffset = 40;
     this.setState({
       mapHeight: window.innerHeight - this.searchBarHeight,
-      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + notchOffset)],
+      sheetHeightStates: [this.searchBarHeight, window.innerHeight * 0.4, window.innerHeight - (64 + this.notchOffset)],
       snapSheetToState: 0,
     });
   };
